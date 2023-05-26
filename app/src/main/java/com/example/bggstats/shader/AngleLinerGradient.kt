@@ -1,22 +1,23 @@
 package com.example.bggstats.shader
 
-import android.util.Log
+import android.graphics.BlurMaskFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlin.math.*
 
-//colors: List<Pair<Float, Color>>
-//colors: List<Color>
-
+//- функция поворота градиента выходящего за границы элемента -
 fun Modifier.angledGradientBackground(colorStops: Array<Pair<Float, Color>>, degrees: Float) = this.then(
     drawBehind {
-        //- функция поворота градиента выходящего за границы элемента -
-
         //координаты высчитывать по двум внешним треугольникам, которые образуются при пересечении двух прямоугольников:
         //1ого от элемента (на котором должен быть градиент) и 2ого от повернутого градиента.
         // *при пересечении образуются 4 треугольника, но так-как противоположные треугольники симметричны мы
@@ -73,3 +74,4 @@ fun Modifier.angledGradientBackground(colorStops: Array<Pair<Float, Color>>, deg
         )
     }
 )
+

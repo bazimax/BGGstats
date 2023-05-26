@@ -17,3 +17,13 @@ val FonGradient = arrayOf(
     0.0f to Coral,
     1f to LightYellow,
 )
+
+val FonGradient2 = arrayOf(
+    0.0f to Color.Magenta,
+    1f to Color.Cyan,
+)
+
+val FonGradientList = listOf(
+    Color.Magenta,
+    Color.Cyan,
+)

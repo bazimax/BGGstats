@@ -47,6 +47,16 @@ android {
 
 dependencies {
 
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0' //retrofit
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0' //gson
+    implementation('com.squareup.retrofit2:converter-simplexml:2.9.0') {
+        exclude module: 'stax'
+        exclude module: 'stax-api'
+        exclude module: 'xpp3'
+    } //XML
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+    //implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
@@ -59,4 +69,14 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    /*//Hilt Temp
+    implementation 'com.google.dagger:hilt-android:2.46.1'
+    annotationProcessor 'com.google.dagger:hilt-compiler:2.46.1'
+    // For instrumentation tests
+    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.46.1'
+    androidTestAnnotationProcessor 'com.google.dagger:hilt-compiler:2.46.1'
+    // For local unit tests
+    testImplementation 'com.google.dagger:hilt-android-testing:2.46.1'
+    testAnnotationProcessor 'com.google.dagger:hilt-compiler:2.46.1'*/
 }
