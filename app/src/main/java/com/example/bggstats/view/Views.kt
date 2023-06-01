@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -532,6 +533,12 @@ fun DetailedGameList(vm: ViewModel){
     }
 }
 
+@Preview
+@Composable
+fun CardTempPreview(){
+    CardTemp("12345", 400.dp)
+}
+
 
 //Delete
 @Composable
@@ -572,6 +579,7 @@ fun CardTemp(name: String, columnHeightDp: Dp) {
 }
 
 //Delete
+@Preview
 @Composable
 fun BoxInnerShadowTemp(){
     Box(

@@ -1,64 +1,24 @@
 package com.example.bggstats
 
-import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
-import android.service.quicksettings.Tile
-import android.text.BoringLayout
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.WindowInsets
-import android.widget.EditText
-import android.widget.HorizontalScrollView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Bottom
-import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
-import androidx.compose.ui.semantics.SemanticsProperties.Text
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bggstats.const.Constants
-import com.example.bggstats.items.DataItemDetailedGame
-import com.example.bggstats.items.ItemsDetailedGameList
-import com.example.bggstats.items.ItemsDetailedGameListTemp
-import com.example.bggstats.items.ItemsGeneralGameList
-import com.example.bggstats.retrofit.BoardGameGeekAPI
 import com.example.bggstats.retrofit.ProductAPI
 import com.example.bggstats.shader.*
 import com.example.bggstats.ui.theme.*
@@ -66,11 +26,9 @@ import com.example.bggstats.view.*
 import com.example.bggstats.vm.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.sqrt
 
 
 class MainActivity : ComponentActivity() {
@@ -98,6 +56,7 @@ class MainActivity : ComponentActivity() {
         val metricsOld = display?.mode?.physicalHeight
         val metricsR = display?.rotation
         //val metricsRot = windowManager.currentWindowMetrics.windowInsets*/
+
 
         setContent {
             /*BGGstatsTheme {
