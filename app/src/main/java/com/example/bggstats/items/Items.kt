@@ -27,6 +27,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bggstats.R
 
+//Delete?
 @Composable
 fun ItemsGeneralGameList(item: DataItemGeneralGame) {
     var isExpanded by remember {
@@ -53,6 +54,7 @@ fun ItemsGeneralGameList(item: DataItemGeneralGame) {
     }
 }
 
+//Delete?
 @Composable
 fun ItemsDetailedGameList(item: DataItemDetailedGameTemp) {
     /*var isExpanded by remember {
@@ -120,6 +122,7 @@ fun ItemsDetailedGameList(item: DataItemDetailedGameTemp) {
     }
 }
 
+//Delete?
 @Composable
 fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, vm: com.example.bggstats.vm.ViewModel) {
 
@@ -169,6 +172,7 @@ fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, vm: com.example.bg
     }
 }
 
+//Delete?
 @Composable
 fun OpenGameInfo(item: DataItemDetailedGameTemp, context: CompositionContext){
     val openDialog = remember { mutableStateOf(false) }
@@ -190,7 +194,7 @@ fun OpenGameInfo(item: DataItemDetailedGameTemp, context: CompositionContext){
         )
     }
 }
-
+//Delete?
 @Composable
 fun Open(open: MutableState<Boolean>): MutableState<Boolean> {
     open.value = true

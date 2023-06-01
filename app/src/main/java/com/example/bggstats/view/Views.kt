@@ -1,5 +1,6 @@
 package com.example.bggstats.view
 
+import android.content.Context
 import android.content.res.XmlResourceParser
 import android.util.Log
 import androidx.annotation.XmlRes
@@ -26,13 +27,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.room.RoomDatabase
 import com.example.bggstats.MainActivity
 import com.example.bggstats.R
 import com.example.bggstats.const.Constants
 import com.example.bggstats.items.ItemsDetailedGameListTemp
 import com.example.bggstats.items.ItemsGeneralGameList
+import com.example.bggstats.items.Name
 import com.example.bggstats.retrofit.ProductAPI
 import com.example.bggstats.retrofit.WebService
+import com.example.bggstats.roomdb.EntityDataItem
+import com.example.bggstats.roomdb.MainDb
 import com.example.bggstats.shader.angledGradientBackground
 import com.example.bggstats.shader.innerShadow
 import com.example.bggstats.ui.theme.*
@@ -61,7 +66,7 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 //Delete
 @Composable
-fun TestButton(vm: ViewModel){
+fun TestButton(dataBase: MainDb, viewModel: ViewModel){
     Card(modifier = Modifier
         .padding(bottom = 10.dp)
         .fillMaxWidth()
@@ -93,7 +98,7 @@ fun TestButton(vm: ViewModel){
                     Log.d(TAG, "xml click")
 
                     //val a= RepositoryImpl("174430")
-                    testRetrofitApiBGG()
+                    testRetrofitApiBGG(dataBase = dataBase)
 
                 }) {
                     Text(text = "xml",
@@ -109,14 +114,14 @@ fun TestButton(vm: ViewModel){
                         fontSize = 10.sp)
                 }
             }
-            Text(text = "${vm.testErrorMessage.value}")
+            Text(text = "${viewModel.testErrorMessage.value}")
             //BoxInnerShadowTemp()
         }
 
     }
 }
 
-//
+//Delete
 fun testRetrofitApi(){
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -138,6 +143,7 @@ fun testRetrofitApi(){
     }
 }
 
+//Delete?
 inline fun <reified T> createWebService(
     okHttpClient: OkHttpClient,
     url: String
@@ -152,8 +158,8 @@ inline fun <reified T> createWebService(
 }
 
 
-//Game Detailed XML-API
-fun testRetrofitApiBGG(){
+//Game Detailed XML-API (from BGG)
+fun testRetrofitApiBGG(dataBase: MainDb){
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -170,20 +176,32 @@ fun testRetrofitApiBGG(){
 
     val webService = retrofit.create(WebService::class.java)
 
-
     //val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
+        //получаем данные с сайта
         val bggAPIDetailedGame = webService.getFeed("174430,224517")//boardGameGeekAPI.getDetailedGame() //webService.getFeed(id)
         //val bggAPIDetailedGame2 = a.fetchFeed("174430")
 
         //val usersResponse = webService.getUsers("174430").execute()
 
+        //записываем полученные данные в таблицу
         if (bggAPIDetailedGame.boardGameList?.size != 0) {
             val boardGameList = bggAPIDetailedGame.boardGameList
-            boardGameList?.forEach { it ->
-                val a = it.yearpublished
-                val b = it.objectid
-                val c = it.nameList?.size
+
+            //val name = Name("")
+            //val list: List<Name> = listOf(name, name)
+            boardGameList?.forEach { item ->
+                val tempItem = EntityDataItem(
+                    null,
+                    item.objectid ?: -1,
+                    item.yearpublished ?: -1,
+                    //item.nameList ?: listOf(Name("none"))
+                    )
+
+                dataBase.getDao().insertItem(tempItem)
+                val a = item.yearpublished
+                val b = item.objectid
+                val c = item.nameList?.size
                 Log.d(TAG, "---- $a, $b, $c")
             }
         }
@@ -202,15 +220,17 @@ fun testRetrofitApiBGG(){
     }*/
 }
 
+
+
 //Info about select game
 @Composable
-fun CustomDialog(openDialog: MutableState<Boolean?>, vm: ViewModel): Boolean? {
+fun CustomDialog(openDialog: MutableState<Boolean?>, viewModel: ViewModel): Boolean? {
     //var openDialog = openDialog1
     if (openDialog.value == true) { //if (vm.statusDetailedGame.value == true) {
         AlertDialog(
             onDismissRequest = {
                 openDialog.value = false
-                vm.statusDetailedGame.value = false
+                viewModel.statusDetailedGame.value = false
                 return@AlertDialog
             },
             title = null, // { Text(text = "${vm.detailedGame.value?.title}") },
@@ -232,16 +252,18 @@ fun CustomDialog(openDialog: MutableState<Boolean?>, vm: ViewModel): Boolean? {
             },*/
             buttons = {
                 Column {
-                    Text(text = "${vm.detailedGame.value?.title}")
+                    Text(text = "${viewModel.detailedGame.value?.title}")
 
-                    Text(text = vm.detailedGame.value?.title ?: "")
+                    Text(text = viewModel.detailedGame.value?.title ?: "")
                     //image v1
                     Image(
-                        painter = painterResource(id = vm.detailedGame.value?.imageId ?: com.example.bggstats.R.drawable.pic2437871_big),//com.example.bggstats.R.drawable.pic2437871),//vm.detailedGame.value?.imageId ?: R.drawable.pic2437871_big),
+                        painter = painterResource(
+                            id = viewModel.detailedGame.value?.imageId ?: R.drawable.pic2437871_big
+                        ),//com.example.bggstats.R.drawable.pic2437871),//vm.detailedGame.value?.imageId ?: R.drawable.pic2437871_big),
                         contentDescription = "in"
                     )
                     //image v2
-                    vm.detailedGame.value?.imageId?.let { painterResource(id = it) }?.let {
+                    viewModel.detailedGame.value?.imageId?.let { painterResource(id = it) }?.let {
                         Image(
                             painter = it,
                             contentDescription = "in"
@@ -255,7 +277,7 @@ fun CustomDialog(openDialog: MutableState<Boolean?>, vm: ViewModel): Boolean? {
                         Alignment.Center) {
                         IconButton(onClick = {
                             openDialog.value = false
-                            vm.statusDetailedGame.value = false
+                            viewModel.statusDetailedGame.value = false
                         }) {
                             Icon(
                                 Icons.Filled.Close,//Filled.Refresh,
@@ -311,6 +333,7 @@ fun GraphsTemp(_columnHeightDp: Dp, localDensity: Density){
         Graphs(columnHeightDp)
     }
 }*/
+
 @Composable
 fun Graphs(columnHeightDp:Dp){
     Column(
@@ -354,7 +377,7 @@ fun Graphs(columnHeightDp:Dp){
 
 //General List
 @Composable
-fun GeneralGameList(openDialog: MutableState<Boolean?>, vm: ViewModel){
+fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
     Card(modifier = Modifier
         .fillMaxWidth()
         //.fillMaxHeight()
@@ -439,7 +462,7 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, vm: ViewModel){
             LazyColumn(modifier = Modifier
                 .fillMaxWidth()
             ) {
-                itemsIndexed(vm.generalGameList
+                itemsIndexed(viewModel.generalGameList
                 ) {_, item ->
                     ItemsGeneralGameList(item = item)
                 }
@@ -450,7 +473,7 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, vm: ViewModel){
 
 //Detailed List
 @Composable
-fun DetailedGameList(vm: ViewModel){
+fun DetailedGameList(viewModel: ViewModel){
     Card(modifier = Modifier
         .padding(top = 10.dp)
         .fillMaxWidth()
@@ -524,9 +547,9 @@ fun DetailedGameList(vm: ViewModel){
             LazyColumn(modifier = Modifier
                 .fillMaxWidth()
             ) {
-                itemsIndexed(vm.detailedGameList
+                itemsIndexed(viewModel.detailedGameList
                 ) {_, item ->
-                    ItemsDetailedGameListTemp(item = item, vm)
+                    ItemsDetailedGameListTemp(item = item, viewModel)
                 }
             }
         }

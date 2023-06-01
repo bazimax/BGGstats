@@ -12,11 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 
 //Animated angle for background
+@Preview
 @Composable
 fun animatedAngle(startAngle: Float = 0f, endAngle: Float = 310f): Float{
     val infiniteTransition = rememberInfiniteTransition()
@@ -32,7 +34,7 @@ fun animatedAngle(startAngle: Float = 0f, endAngle: Float = 310f): Float{
 }
 
 
-
+@Preview
 @Composable
 fun LoadingAnimationCircle(
     indicatorSize: Dp = 100.dp,

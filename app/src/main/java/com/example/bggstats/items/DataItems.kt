@@ -38,6 +38,7 @@ data class DataItemDetailedGame(
     val EXPANSION: Boolean*/
 )
 
+//Delete
 data class Product(
     val id: Int,
     val title: String,

@@ -9,15 +9,15 @@ import retrofit2.http.Query
 
 
 //Retrofit JSON >
-interface BoardGameGeekParse {
+/*interface BoardGameGeekParse {
     @GET("1") //https://boardgamegeek.com/browse/boardgame/page/1
     suspend fun getGeneralGameList(): DataItemGeneralGame
-}
+}*/
 
-interface BoardGameGeekAPI {
+/*interface BoardGameGeekAPI {
         @GET("xmlapi/boardgame/174430") //https://boardgamegeek.com/xmlapi/boardgame/174430
     suspend fun getDetailedGame(): DataItemDetailedGame
-}
+}*/
 
 /*
 @GET("products/{id}") //https://boardgamegeek.com/xmlapi/boardgame/174430
