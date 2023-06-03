@@ -35,6 +35,11 @@ open class ViewModel : ViewModel() {
         MutableLiveData<String>()
     }
 
+    //Отслеживаем поворот экрана
+    val boardGameFeedFromRetrofit: MutableLiveData<Feed> by lazy {
+        MutableLiveData<Feed>()
+    }
+
     val generalGameList = listOf(
         DataItemGeneralGame(1, "Brass: Birmingham", "uri", "shortDescription"),
         DataItemGeneralGame(2, "Gloomhaven", "uri", "shortDescription"),

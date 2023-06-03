@@ -1,9 +1,6 @@
 package com.example.bggstats.view
 
-import android.content.Context
-import android.content.res.XmlResourceParser
 import android.util.Log
-import androidx.annotation.XmlRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,13 +24,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.RoomDatabase
 import com.example.bggstats.MainActivity
 import com.example.bggstats.R
+import com.example.bggstats.atest.log
+import com.example.bggstats.atest.logD
+import com.example.bggstats.atest.logEnd
+import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
 import com.example.bggstats.items.ItemsDetailedGameListTemp
 import com.example.bggstats.items.ItemsGeneralGameList
-import com.example.bggstats.items.Name
 import com.example.bggstats.retrofit.ProductAPI
 import com.example.bggstats.retrofit.WebService
 import com.example.bggstats.roomdb.EntityDataItem
@@ -42,15 +41,17 @@ import com.example.bggstats.shader.angledGradientBackground
 import com.example.bggstats.shader.innerShadow
 import com.example.bggstats.ui.theme.*
 import com.example.bggstats.vm.ViewModel
+import com.example.bggstats.vm.ViewModelFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.xmlpull.v1.XmlPullParser
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+
+private val lnc = "Views" //logNameClass - для логов
 
 
 //КОНСТАНТЫ
@@ -98,14 +99,19 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                     Log.d(TAG, "xml click")
 
                     //val a= RepositoryImpl("174430")
-                    testRetrofitApiBGG(dataBase = dataBase)
+                    testRetrofitApiBGG(dataBase = dataBase, viewModel = viewModel)
 
                 }) {
                     Text(text = "xml",
                         fontSize = 10.sp)
                 }
 
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = {
+                    Log.d(TAG, "page3-4 click")
+                    logD("page3-4 click")
+
+                    RetrofitApiBGG(viewModel = viewModel)
+                }) {
                     Text(text = "page3-4",
                         fontSize = 10.sp)
                 }
@@ -159,7 +165,7 @@ inline fun <reified T> createWebService(
 
 
 //Game Detailed XML-API (from BGG)
-fun testRetrofitApiBGG(dataBase: MainDb){
+fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -188,17 +194,28 @@ fun testRetrofitApiBGG(dataBase: MainDb){
         if (bggAPIDetailedGame.boardGameList?.size != 0) {
             val boardGameList = bggAPIDetailedGame.boardGameList
 
-            //val name = Name("")
-            //val list: List<Name> = listOf(name, name)
+            val db = dataBase.getDao()
+            //очищаем базу перед записью
+            db.deleteAll()
+
             boardGameList?.forEach { item ->
+                Log.d(TAG, "nameList: ${item.nameList}")
+                val listName: MutableList<String> = mutableListOf()//List<String> = emptyList()
+                item.nameList?.forEach { list ->
+                    Log.d(TAG, "list: ${list.name}")
+                    listName.add(list.name.toString())
+                }
+                val string = listName.joinToString("%%X!!##")
+                Log.d(TAG, "string: $string")
+
                 val tempItem = EntityDataItem(
                     null,
                     item.objectid ?: -1,
                     item.yearpublished ?: -1,
-                    //item.nameList ?: listOf(Name("none"))
+                    string //?: "listOf("none")" //item.nameList
                     )
 
-                dataBase.getDao().insertItem(tempItem)
+                db.insertItem(tempItem)
                 val a = item.yearpublished
                 val b = item.objectid
                 val c = item.nameList?.size
@@ -218,6 +235,46 @@ fun testRetrofitApiBGG(dataBase: MainDb){
         val bggTest = boardGameGeekAPI.getDetailedGame()
         Log.d(TAG, "$bggTest")
     }*/
+}
+
+//Work
+fun RetrofitApiBGG(viewModel: ViewModel){
+    logStart(lnc, "RetrofitApiBGG")
+    val interceptor = HttpLoggingInterceptor()
+    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://boardgamegeek.com") //https://dummyjson.com //https://boardgamegeek.com/xmlapi/boardgame/
+        .client(client)
+        //.addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(SimpleXmlConverterFactory.create())
+        .build()
+
+    val webService = retrofit.create(WebService::class.java)
+
+    //val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        //получаем данные с сайта
+        val bggAPIDetailedGame = webService.getFeed("174430,224517")
+
+        //записываем полученные данные в viewModel а тот уже в таблицу Room
+        ViewModelFunctions(viewModel = viewModel).boardGameFeedToViewModel(bggAPIDetailedGame)
+
+        Log.d(TAG, "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n successful: ${bggAPIDetailedGame.boardGameList?.size}, \n webService: $")
+        log(lnc, "RetrofitApiBGG", "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
+                " successful: ${bggAPIDetailedGame.boardGameList?.size},")
+    }
+
+    /*val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        val bggTest = boardGameGeekAPI.getDetailedGame()
+        Log.d(TAG, "$bggTest")
+    }*/
+    logEnd(lnc, "RetrofitApiBGG")
 }
 
 
@@ -333,7 +390,6 @@ fun GraphsTemp(_columnHeightDp: Dp, localDensity: Density){
         Graphs(columnHeightDp)
     }
 }*/
-
 @Composable
 fun Graphs(columnHeightDp:Dp){
     Column(

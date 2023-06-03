@@ -18,12 +18,17 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bggstats.atest.logEnd
+import com.example.bggstats.atest.logLaunch
+import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
 import com.example.bggstats.retrofit.ProductAPI
+import com.example.bggstats.roomdb.MainDb
 import com.example.bggstats.shader.*
 import com.example.bggstats.ui.theme.*
 import com.example.bggstats.view.*
 import com.example.bggstats.vm.ViewModel
+import com.example.bggstats.vm.ViewModelFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
 
+    private val lnc = "MainActivity" //logNameClass - для логов
     private val vm: ViewModel by viewModels()
 
     //КОНСТАНТЫ
@@ -44,12 +50,15 @@ class MainActivity : ComponentActivity() {
 
         //View
         const val CORNER = Constants.CORNER
-
     }
+
+    private val TAG1 = this.javaClass.simpleName
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        logLaunch(lnc, "onCreate")
 
         /*val coral = Color(0xFFF3A397)
         val lightYellow = Color(0xFFF8EE94)
@@ -57,6 +66,9 @@ class MainActivity : ComponentActivity() {
         val metricsR = display?.rotation
         //val metricsRot = windowManager.currentWindowMetrics.windowInsets*/
 
+        val db = MainDb.getDb(this)
+
+        init(dataBase = db)
 
         setContent {
             /*BGGstatsTheme {
@@ -74,6 +86,9 @@ class MainActivity : ComponentActivity() {
                 windowManager.currentWindowMetrics.bounds.width()
             }*/
 
+            //Delete?
+            //val db = MainDb.getDb(this)
+
             Log.d(TAG, "------------------------------")
 
             //Open custom dialog
@@ -83,10 +98,10 @@ class MainActivity : ComponentActivity() {
                 if (vm.statusDetailedGame.value == true) openDialog.value = true
                 //Log.d("TAG", "openDialog: ${openDialog.value}")
             }
-            openDialog.value = CustomDialog(openDialog = openDialog, vm = vm)
+            openDialog.value = CustomDialog(openDialog = openDialog, viewModel = vm)
 
             //Angle gradient
-            var sliderValue by remember { mutableStateOf(310f) }
+            //var sliderValue by remember { mutableStateOf(310f) }
 
 
 
@@ -115,29 +130,25 @@ class MainActivity : ComponentActivity() {
                 .padding(25.dp)
             ) {
                 //test buttons
-                TestButton(vm)
+                TestButton(dataBase = db, viewModel =  vm)
 
+                //Delete?
                 Button(onClick = {
                     Log.d(com.example.bggstats.view.TAG, "BGGList click")
                     val retrofit = Retrofit.Builder()
                         .baseUrl("https://dummyjson.com") //https://dummyjson.com //https://boardgamegeek.com/xmlapi/boardgame/
                         .addConverterFactory(GsonConverterFactory.create())
                         .build()
-
-
                     val getProduct = retrofit.create(ProductAPI::class.java)
-
                     /*GlobalScope.launch {
                         val bggAPIDetailedGame = getProduct.getProductById()
                         Log.d(com.example.bggstats.view.TAG, "$bggAPIDetailedGame")
                     }*/
-
                     CoroutineScope(Dispatchers.IO).launch {
                         val bggAPIDetailedGame = getProduct.getProductById()
-                        val bggtest =
-                        Log.d(com.example.bggstats.view.TAG, "$bggAPIDetailedGame")
+                        //val bggtest =
+                        Log.d(TAG, "$bggAPIDetailedGame")
                     }
-
                 }) {
                     Text(text = "BGGList",
                         fontSize = 10.sp)
@@ -166,10 +177,10 @@ class MainActivity : ComponentActivity() {
                 }
 
                 //General List
-                GeneralGameList(openDialog = openDialog, vm = vm)
+                GeneralGameList(openDialog = openDialog, viewModel = vm)
 
                 //Detailed List
-                DetailedGameList(vm = vm)
+                DetailedGameList(viewModel = vm)
 
                 /*
                 Slider(
@@ -188,7 +199,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    //стартовые функции
+    private fun init(dataBase: MainDb){
+        logStart(lnc, "init")
+        ViewModelFunctions(vm).observeVM(dataBase, this)
+        logEnd(lnc, "init")
+    }
 }
+
+
 
 
 /*private fun isEditTagItemFullyVisible(lazyListState: LazyListState, editTagItemIndex: Int): Boolean {

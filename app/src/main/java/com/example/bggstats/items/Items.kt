@@ -194,6 +194,7 @@ fun OpenGameInfo(item: DataItemDetailedGameTemp, context: CompositionContext){
         )
     }
 }
+
 //Delete?
 @Composable
 fun Open(open: MutableState<Boolean>): MutableState<Boolean> {
