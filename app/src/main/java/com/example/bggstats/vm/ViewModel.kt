@@ -1,17 +1,62 @@
 package com.example.bggstats.vm
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.bggstats.R
-import com.example.bggstats.items.BoardGame
+import com.example.bggstats.items.DataItemDetailedGame
 import com.example.bggstats.items.DataItemDetailedGameTemp
 import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.items.Feed
-import com.example.bggstats.retrofit.WebService
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+
 
 open class ViewModel : ViewModel() {
+
+    //Delete?
+    val detailedGame = MutableLiveData<DataItemDetailedGameTemp>()
+
+    //Open custom dialog
+    var statusDetailedGame = MutableLiveData(false)
+
+    //Отслеживаем поворот экрана
+    val boardGameFeedFromRetrofit: MutableLiveData<Feed> by lazy {
+        MutableLiveData<Feed>()
+    }
+
+    //Общий список игр
+    val generalGameList: MutableLiveData<List<DataItemGeneralGame>> by lazy {
+        MutableLiveData<List<DataItemGeneralGame>>()
+    }
+
+    //Подробный список игр
+    val detailedGameList: MutableLiveData<List<DataItemDetailedGame>> by lazy {
+        MutableLiveData<List<DataItemDetailedGame>>()
+    }
+
+    //TEST>
+    var testErrorMessage = MutableLiveData("")
+
+    val generalGameListTest3: MutableLiveData<Array<DataItemGeneralGame>> by lazy {
+        MutableLiveData<Array<DataItemGeneralGame>>()
+    }
+    val generalGameListTest3a1 = MutableLiveData<Array<DataItemGeneralGame>>()
+    val generalGameListTest2 = MutableLiveData<List<DataItemGeneralGame>>()
+
+    val generalGameListTest = listOf(
+        DataItemGeneralGame(1, "Brass: Birmingham", "uri", "shortDescription"),
+        DataItemGeneralGame(2, "Gloomhaven", "uri", "shortDescription"),
+        DataItemGeneralGame(3, "Ark Nova", "uri", "shortDescription")
+    )
+    val detailedGameListTest = listOf(
+        DataItemDetailedGameTemp(R.drawable.pic3490053, 1, "Brass: Birmingham"),
+        DataItemDetailedGameTemp(R.drawable.pic2437871, 2, "Gloomhaven"),
+        DataItemDetailedGameTemp(R.drawable.pic6293412, 3, "Ark Nova"),
+    )
+    val detailedGameListDraw = listOf(
+        R.drawable.pic3490053,
+        R.drawable.pic2437871,
+        R.drawable.pic6293412
+    )
 
     var statusProgressBarGeneralGameList = MutableLiveData(false)
     var statusProgressBarDetailedGameList  = MutableLiveData(false)
@@ -19,45 +64,19 @@ open class ViewModel : ViewModel() {
     var statusVisibilityGeneralGameList = MutableLiveData(false)
     var statusVisibilityDetailedGameList = MutableLiveData(false)
 
-    val detailedGame = MutableLiveData<DataItemDetailedGameTemp>()
-    var statusDetailedGame = MutableLiveData(false)
-
-
-    var testErrorMessage = MutableLiveData("")
-
-    //Список новостей (NewsItem)
-    /*val newsItemArrayAll: MutableLiveData<ArrayList<NewsItem>> by lazy { //Список новостей (NewsItem) - "всех"
-        MutableLiveData<ArrayList<NewsItem>>()
-    }*/
-
     //Отслеживаем поворот экрана
     val statusLandscape: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
+    //TEST^
 
-    //Отслеживаем поворот экрана
-    val boardGameFeedFromRetrofit: MutableLiveData<Feed> by lazy {
-        MutableLiveData<Feed>()
-    }
 
-    val generalGameList = listOf(
-        DataItemGeneralGame(1, "Brass: Birmingham", "uri", "shortDescription"),
-        DataItemGeneralGame(2, "Gloomhaven", "uri", "shortDescription"),
-        DataItemGeneralGame(3, "Ark Nova", "uri", "shortDescription")
-    )
 
-    val detailedGameListDraw = listOf(
-        R.drawable.pic3490053,
-        R.drawable.pic2437871,
-        R.drawable.pic6293412
-    )
 
-    val detailedGameList = listOf(
-        DataItemDetailedGameTemp(R.drawable.pic3490053, 1, "Brass: Birmingham"),
-        DataItemDetailedGameTemp(R.drawable.pic2437871, 2, "Gloomhaven"),
-        DataItemDetailedGameTemp(R.drawable.pic6293412, 3, "Ark Nova"),
-    )
+
+
 }
+
 
 /*interface Repository {
     val feedLiveData: LiveData<Feed>

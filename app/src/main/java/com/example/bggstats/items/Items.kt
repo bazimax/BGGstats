@@ -23,13 +23,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bggstats.R
+import com.example.bggstats.atest.MyLog
+import com.example.bggstats.vm.ViewModel
 
-//Delete?
+private const val lnc = "items" //logNameClass - для логов
+
+//WORK
+//элемент DataItemGeneralGame для списка всех найденных игр
 @Composable
 fun ItemsGeneralGameList(item: DataItemGeneralGame) {
+    MyLog(lnc, "@Composable: ItemsGeneralGameList", "DataItemGeneralGame: $item")
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -54,7 +59,8 @@ fun ItemsGeneralGameList(item: DataItemGeneralGame) {
     }
 }
 
-//Delete?
+//WORK
+//Элемент списка DataItemDetailedGame в котором отображаются подробные сведения по каждой игре
 @Composable
 fun ItemsDetailedGameList(item: DataItemDetailedGameTemp) {
     /*var isExpanded by remember {
@@ -122,12 +128,14 @@ fun ItemsDetailedGameList(item: DataItemDetailedGameTemp) {
     }
 }
 
-//Delete?
+//WORK
+//TEST
+//Элемент списка DataItemDetailedGameTemp в котором отображаются подробные сведения по каждой игре
 @Composable
-fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, vm: com.example.bggstats.vm.ViewModel) {
+fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, viewModel: ViewModel) {
 
+    //??
     val openDialog = remember { mutableStateOf(false) }
-
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -144,16 +152,17 @@ fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, vm: com.example.bg
             }
         )
     }
+
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(3.dp)
         .background(Color.White)
         .clickable {
             Log.d("TAG", "Click")
-            vm.detailedGame.value = item
-            vm.statusDetailedGame.value = true
-            Log.d("TAG", "detailedGame: ${vm.detailedGame.value}")
-            Log.d("TAG", "statusDetailedGame: ${vm.statusDetailedGame.value}")
+            viewModel.detailedGame.value = item
+            viewModel.statusDetailedGame.value = true
+            //Log.d("TAG", "detailedGame: ${viewModel.detailedGame.value}")
+            //Log.d("TAG", "statusDetailedGame: ${viewModel.statusDetailedGame.value}")
         }
     ) {
         Text(text = item.id.toString())
@@ -211,6 +220,7 @@ fun Open(open: MutableState<Boolean>): MutableState<Boolean> {
     return open
 }
 
+//WORK
 //заготовка для графиков
 @Composable
 fun ItemsBox(screenSize: Int, value: Int, color: Color) {

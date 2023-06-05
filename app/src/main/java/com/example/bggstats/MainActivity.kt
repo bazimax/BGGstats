@@ -1,5 +1,6 @@
 package com.example.bggstats
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,10 +19,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleOwner
+import com.example.bggstats.atest.MyLog
+import com.example.bggstats.atest.logD
 import com.example.bggstats.atest.logEnd
-import com.example.bggstats.atest.logLaunch
 import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
+import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.retrofit.ProductAPI
 import com.example.bggstats.roomdb.MainDb
 import com.example.bggstats.shader.*
@@ -35,10 +39,10 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
+private const val lnc = "MainActivity" //logNameClass - для логов
 class MainActivity : ComponentActivity() {
 
-    private val lnc = "MainActivity" //logNameClass - для логов
+    //private val lnc = "MainActivity" //logNameClass - для логов
     private val vm: ViewModel by viewModels()
 
     //КОНСТАНТЫ
@@ -52,13 +56,18 @@ class MainActivity : ComponentActivity() {
         const val CORNER = Constants.CORNER
     }
 
+    //?? Проверить
     private val TAG1 = this.javaClass.simpleName
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        logLaunch(lnc, "onCreate")
+        //logLaunch(lnc, "onCreate")
+        val logMain = MyLog(lnc, "onCreate", launch = true)
+        logMain.d(TAG1)
+
+
 
         /*val coral = Color(0xFFF3A397)
         val lightYellow = Color(0xFFF8EE94)
@@ -66,11 +75,11 @@ class MainActivity : ComponentActivity() {
         val metricsR = display?.rotation
         //val metricsRot = windowManager.currentWindowMetrics.windowInsets*/
 
-        val db = MainDb.getDb(this)
-
-        init(dataBase = db)
+        val db = MainDb.getDb(this) //создаем-открываем Базу Данных (БД) Room
+        init(dataBase = db) //стартовые функции
 
         setContent {
+
             /*BGGstatsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -89,22 +98,38 @@ class MainActivity : ComponentActivity() {
             //Delete?
             //val db = MainDb.getDb(this)
 
-            Log.d(TAG, "------------------------------")
+            logD("------------------------------")
 
             //Open custom dialog
             val openDialog = remember { mutableStateOf(vm.statusDetailedGame.value) }
-            //Log.d("TAG", "openDialog: ${openDialog.value}")
             vm.statusDetailedGame.observe(this) {
                 if (vm.statusDetailedGame.value == true) openDialog.value = true
-                //Log.d("TAG", "openDialog: ${openDialog.value}")
             }
             openDialog.value = CustomDialog(openDialog = openDialog, viewModel = vm)
+
+            //Общий список игр
+            val generalGameList = remember { mutableStateOf(vm.generalGameList.value) }
+            vm.generalGameList.observe(this) {
+                if (vm.generalGameList.value !=null) {
+                    generalGameList.value = vm.generalGameList.value
+                }
+            }
+
+            /*//WORK - заготовка
+            //Подробный список игр
+            val detailGameList = remember { mutableStateOf(vm.detailedGameList.value) }
+            vm.detailedGameList.observe(this) {
+                if (vm.detailedGameList.value !=null) {
+                    detailGameList.value = vm.detailedGameList.value
+                }
+            }*/
 
             //Angle gradient
             //var sliderValue by remember { mutableStateOf(310f) }
 
 
 
+            //??
             //val lazyListState: LazyListState = rememberLazyListState()
 
             //Card size
@@ -134,7 +159,7 @@ class MainActivity : ComponentActivity() {
 
                 //Delete?
                 Button(onClick = {
-                    Log.d(com.example.bggstats.view.TAG, "BGGList click")
+                    logD("BGGList click")
                     val retrofit = Retrofit.Builder()
                         .baseUrl("https://dummyjson.com") //https://dummyjson.com //https://boardgamegeek.com/xmlapi/boardgame/
                         .addConverterFactory(GsonConverterFactory.create())
@@ -142,12 +167,12 @@ class MainActivity : ComponentActivity() {
                     val getProduct = retrofit.create(ProductAPI::class.java)
                     /*GlobalScope.launch {
                         val bggAPIDetailedGame = getProduct.getProductById()
-                        Log.d(com.example.bggstats.view.TAG, "$bggAPIDetailedGame")
+                        logD("$bggAPIDetailedGame")
                     }*/
                     CoroutineScope(Dispatchers.IO).launch {
                         val bggAPIDetailedGame = getProduct.getProductById()
                         //val bggtest =
-                        Log.d(TAG, "$bggAPIDetailedGame")
+                        logD("$bggAPIDetailedGame")
                     }
                 }) {
                     Text(text = "BGGList",
@@ -168,7 +193,7 @@ class MainActivity : ComponentActivity() {
                         // Set column height using the LayoutCoordinates
                         //columnHeightPx = coordinates.size.width.toFloat()
                         columnHeightDp = with(localDensity) { coordinates.size.width.toDp() - 30.dp }
-                        //Log.d("TAG", "Px: $columnHeightPx, Dp:$columnHeightDp")
+                        //logD("Px: $columnHeightPx, Dp:$columnHeightDp")
                     }
                     .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
                     RoundedCornerShape(CORNER.dp)
@@ -177,7 +202,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 //General List
-                GeneralGameList(openDialog = openDialog, viewModel = vm)
+                GeneralGameList(openDialog = openDialog, generalGameList, viewModel = vm, owner = this@MainActivity)
 
                 //Detailed List
                 DetailedGameList(viewModel = vm)
@@ -190,7 +215,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onValueChangeFinished = {
                         // this is called when the user completed selecting the value
-                        Log.d("TAG", "sliderValue = $sliderValue")
+                        logD("sliderValue = $sliderValue")
                     },
                     valueRange = 0f..360f,
                     modifier = Modifier.padding(top = 10.dp)
@@ -208,9 +233,32 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+//Zapas - доп. вариант
+val data = data(viewModel = vm, owner = this)
+logMain.d("data.first: ${data.first}")
+logMain.d("data.second: ${data.second}")
 
+@Composable
+fun data(viewModel: ViewModel, owner: LifecycleOwner): Pair<Boolean?, List<DataItemGeneralGame>?> {
+    //Open custom dialog
+    val openDialog = remember { mutableStateOf(viewModel.statusDetailedGame.value) }
+    viewModel.statusDetailedGame.observe(owner) {
+        if (viewModel.statusDetailedGame.value == true) openDialog.value = true
+    }
+    openDialog.value = CustomDialog(openDialog = openDialog, viewModel = viewModel)
 
+    val generalGameListVM = remember { mutableStateOf(viewModel.generalGameList.value) }
 
+    viewModel.generalGameList.observe(owner) {
+        if (viewModel.generalGameList.value !=null) {
+            generalGameListVM.value = viewModel.generalGameList.value
+        }
+    }
+    return openDialog.value to generalGameListVM.value
+}*/
+
+//??
 /*private fun isEditTagItemFullyVisible(lazyListState: LazyListState, editTagItemIndex: Int): Boolean {
     with(lazyListState.layoutInfo) {
         val editingTagItemVisibleInfo = visibleItemsInfo.find { it.index == editTagItemIndex }
@@ -232,7 +280,7 @@ fun Metric(){
         mutableStateOf(DisplayMetrics().heightPixels)
     }
 
-    Log.d("TAG", "disp: $displayMetrics")
+    logD("disp: $displayMetrics")
 
     Text(text = displayMetrics.toString())
 }*/

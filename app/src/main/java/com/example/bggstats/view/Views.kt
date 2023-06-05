@@ -18,19 +18,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleOwner
 import com.example.bggstats.MainActivity
 import com.example.bggstats.R
+import com.example.bggstats.atest.MyLog
 import com.example.bggstats.atest.log
 import com.example.bggstats.atest.logD
 import com.example.bggstats.atest.logEnd
 import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
+import com.example.bggstats.items.DataItemDetailedGame
+import com.example.bggstats.items.DataItemDetailedGameTemp
+import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.items.ItemsDetailedGameListTemp
 import com.example.bggstats.items.ItemsGeneralGameList
 import com.example.bggstats.retrofit.ProductAPI
@@ -51,7 +55,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-private val lnc = "Views" //logNameClass - для логов
+
+const val lnc = "Views" //logNameClass - для логов
+
+
 
 
 //КОНСТАНТЫ
@@ -87,7 +94,7 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(onClick = {
-                    Log.d(TAG, "BGGList click")
+                    logD("BGGList click")
                     testRetrofitApi()
 
                 }) {
@@ -96,7 +103,7 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                 }
 
                 Button(onClick = {
-                    Log.d(TAG, "xml click")
+                    logD("xml click")
 
                     //val a= RepositoryImpl("174430")
                     testRetrofitApiBGG(dataBase = dataBase, viewModel = viewModel)
@@ -107,7 +114,6 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                 }
 
                 Button(onClick = {
-                    Log.d(TAG, "page3-4 click")
                     logD("page3-4 click")
 
                     RetrofitApiBGG(viewModel = viewModel)
@@ -145,11 +151,12 @@ fun testRetrofitApi(){
     val getProduct = retrofit.create(ProductAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
         val bggAPIDetailedGame = getProduct.getProductById()
-        Log.d(TAG, "$bggAPIDetailedGame")
+        //Log.d(TAG, "$bggAPIDetailedGame")
     }
 }
 
 //Delete?
+/*
 inline fun <reified T> createWebService(
     okHttpClient: OkHttpClient,
     url: String
@@ -162,6 +169,7 @@ inline fun <reified T> createWebService(
         .build()
     return retrofit.create(T::class. java )
 }
+*/
 
 
 //Game Detailed XML-API (from BGG)
@@ -264,7 +272,6 @@ fun RetrofitApiBGG(viewModel: ViewModel){
         //записываем полученные данные в viewModel а тот уже в таблицу Room
         ViewModelFunctions(viewModel = viewModel).boardGameFeedToViewModel(bggAPIDetailedGame)
 
-        Log.d(TAG, "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n successful: ${bggAPIDetailedGame.boardGameList?.size}, \n webService: $")
         log(lnc, "RetrofitApiBGG", "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
                 " successful: ${bggAPIDetailedGame.boardGameList?.size},")
     }
@@ -276,8 +283,6 @@ fun RetrofitApiBGG(viewModel: ViewModel){
     }*/
     logEnd(lnc, "RetrofitApiBGG")
 }
-
-
 
 //Info about select game
 @Composable
@@ -431,15 +436,21 @@ fun Graphs(columnHeightDp:Dp){
     }
 }
 
+//WORK
 //General List
 @Composable
-fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        //.fillMaxHeight()
-        //.weight(1f)
-        .height(80.dp)
-        .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
+fun GeneralGameList(openDialog: MutableState<Boolean?>,
+                    generalGameList: MutableState<List<DataItemGeneralGame>?>,
+                    viewModel: ViewModel,
+                    owner: LifecycleOwner) {
+    val log = MyLog(lnc, "@Composable: GeneralGameList", "Список доступных игр")
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            //.fillMaxHeight()
+            //.weight(1f)
+            .height(180.dp)
+            .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
         RoundedCornerShape(MainActivity.CORNER.dp),
         elevation = 10.dp
     ) {
@@ -448,9 +459,10 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 5.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Список доступных игр")
@@ -465,18 +477,20 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
                 .border(width = 1.dp, LightGray, shape = RoundedCornerShape(CORNER.dp))
                 .angledGradientBackground(FonGradient, sliderValue)
             )*/
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 1.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 1.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val context = LocalContext.current
-                Button(onClick = {
-                    //vm.detailedGameList
-                    openDialog.value = true
-                    //Toast.makeText(context, "test", Toast.LENGTH_LONG).show()
-                },
+                //val context = LocalContext.current
+                Button(
+                    onClick = {
+                        //vm.detailedGameList
+                        openDialog.value = true
+                        //Toast.makeText(context, "test", Toast.LENGTH_LONG).show()
+                    },
                     colors = ButtonDefaults.textButtonColors(
                         backgroundColor = Coral,
                         contentColor = Color.White
@@ -492,8 +506,10 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
                 Text(text = "до")
                 //OutlinedTextField(value = "", label = { Text(text = "1450")},onValueChange = {})
                 Text(text = "1450")
-                Text(text = "стр.",
-                    color = Color.Black)
+                Text(
+                    text = "стр.",
+                    color = Color.Black
+                )
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_outline_file_download_24),
@@ -515,18 +531,69 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>, viewModel: ViewModel){
                     )
                 }
             }
-            LazyColumn(modifier = Modifier
+
+            if (generalGameList.value != null) {
+                LazyColGeneral(generalGameList = generalGameList.value!!)
+            }
+
+            //LazyCol(generalGameList = myList.value!!)
+
+            /*LazyColumn(modifier = Modifier
                 .fillMaxWidth()
             ) {
-                itemsIndexed(viewModel.generalGameList
+                itemsIndexed(viewModel.generalGameListTest
                 ) {_, item ->
                     ItemsGeneralGameList(item = item)
                 }
-            }
+            }*/
         }
     }
 }
 
+//Общий список игр
+@Composable
+fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
+    MyLog(lnc, "LazyColGeneral")
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        itemsIndexed(generalGameList
+        ) { _, item ->
+            ItemsGeneralGameList(item = item)
+        }
+    }
+}
+
+//WORK - заготовка
+//Подробный список игр
+@Composable
+fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: ViewModel){
+    MyLog(lnc, "LazyColGeneral")
+    LazyColumn(modifier = Modifier
+        .fillMaxWidth()
+    ) {
+        itemsIndexed(generalGameList
+        ) {_, item ->
+            ItemsDetailedGameListTemp(item = item, viewModel)
+        }
+    }
+}
+
+
+
+
+
+
+/*
+//Zapas пересоздание списка
+fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
+    clear()
+    addAll(newList)
+}*/
+
+
+//WORK
 //Detailed List
 @Composable
 fun DetailedGameList(viewModel: ViewModel){
@@ -600,18 +667,23 @@ fun DetailedGameList(viewModel: ViewModel){
                     )
                 }
             }
-            LazyColumn(modifier = Modifier
+            //TEST
+            LazyColDetailed(generalGameList = viewModel.detailedGameListTest, viewModel = viewModel)
+            /*LazyColumn(modifier = Modifier
                 .fillMaxWidth()
             ) {
-                itemsIndexed(viewModel.detailedGameList
+                itemsIndexed(viewModel.detailedGameListTest
                 ) {_, item ->
                     ItemsDetailedGameListTemp(item = item, viewModel)
                 }
-            }
+            }*/
         }
     }
 }
 
+
+
+//Delete?
 @Preview
 @Composable
 fun CardTempPreview(){
@@ -619,7 +691,8 @@ fun CardTempPreview(){
 }
 
 
-//Delete
+
+//Delete?
 @Composable
 fun CardTemp(name: String, columnHeightDp: Dp) {
     Card(modifier = Modifier

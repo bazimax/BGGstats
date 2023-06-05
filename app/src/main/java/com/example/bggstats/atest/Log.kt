@@ -18,6 +18,7 @@ import com.example.bggstats.const.Constants
 //Delete?
 //private val TAG = this.javaClass.simpleName
 
+//Первый вариант логов
 //универсальная отметка о чем-то
 fun log(logNameClass: String, function: String, text: String = ""){
 
@@ -30,7 +31,7 @@ fun log(logNameClass: String, function: String, text: String = ""){
 
 //старт программы\жизненного цикла (обычно тут указывается onCreate)
 fun logLaunch(logNameClass: String, function: String, text: String = ""){
-    logD("logLaunch > start")
+    //logD("logLaunch > start")
 
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
@@ -42,7 +43,7 @@ fun logLaunch(logNameClass: String, function: String, text: String = ""){
                 checkText("$logNameClass >f $function","====== LAUNCH") +
                 checkText("$logNameClass >f $function",text))
     }
-    logD("logLaunch > end")
+    //logD("logLaunch > end")
 }
 
 //отметка начала работы функции
@@ -75,7 +76,6 @@ fun logInfo(logNameClass: String, function: String, text: String){
     }
 }
 
-
 //отслеживание данных
 fun logData(logNameClass: String, function: String, data: String, text: String = ""){
 
@@ -87,7 +87,7 @@ fun logData(logNameClass: String, function: String, data: String, text: String =
     }
 }
 
-//отслеживание данных
+//отслеживание больших данных
 fun logDataBig(logNameClass: String, function: String, dataBig: String, text: String = ""){
 
     // Режим отладки, ведём логи
@@ -97,7 +97,8 @@ fun logDataBig(logNameClass: String, function: String, dataBig: String, text: St
         )
     }
 }
-//отслеживание данных
+
+//отслеживание данных в циклах
 fun logDataEach(logNameClass: String, function: String, dataEach: String, text: String = ""){
 
     // Режим отладки, ведём логи
@@ -107,9 +108,9 @@ fun logDataEach(logNameClass: String, function: String, dataEach: String, text: 
         )
     }
 }
+
 //сообщение об ошибке + Log.e
 fun logError(logNameClass: String, function: String, textError: String){
-
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
         Log.e(Constants.TAG_ERROR, "$logNameClass >f $function > ERROR: $textError")
@@ -118,24 +119,150 @@ fun logError(logNameClass: String, function: String, textError: String){
 
 //простой лог
 fun logD(text: String){
+
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
         Log.d(Constants.TAG_DEBUG, text)
     }
 }
 fun logI(text: String){
+
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
         Log.i(Constants.TAG_DEBUG, text)
     }
 }
 
-//перемещаем текст на новую строку и смещаем на длину tabString
+//перемещаем текст на новую строку и смещаем на длину tabString //оно же correctText
 fun checkText(tabString: String, text: String): String {
     return if (text != "") "\n${"".padStart(tabString.count() - 1, ' ')}* " + text else ""
 
 }
 
+//второй вариант логов //class MyLog(private var logNameClass: String, private var function: String, msgStart: String = "", launch: Boolean = false)
+class MyLog(private var logNameClass: String, private var function: String, msgStart: String = "", launch: Boolean = false){
+
+    //private var logNameClass: String = function2
+    //private var function: String
+    //отметка начала работы функции
+    init {
+
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            //Если это запуск активити
+            if (launch) {
+                Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ======================== >" +
+                        correctText("$logNameClass >f $function","======") +
+                        correctText("$logNameClass >f $function","======") +
+                        correctText("$logNameClass >f $function","======") +
+                        correctText("$logNameClass >f $function","====== LAUNCH") +
+                        correctText("$logNameClass >f $function",msgStart))
+            }
+            //если обычная функция
+            else Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function === START" +
+                    correctText("$logNameClass >f $function",msgStart))
+        }
+    }
+
+    //Конструктор для вложенных логов
+    constructor(myLog: MyLog,
+                childFunction: String,
+                logNameClass: String = myLog.logNameClass,
+                function: String = "${myLog.function} > $childFunction",
+                msgStart: String = "",
+                launch: Boolean = false
+    ) : this(logNameClass, function, msgStart, launch)
+
+    //отметка окончания работы функции
+    fun end(msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ----- END" +
+                    correctText("$logNameClass >f $function",msg))
+        }
+    }
+
+    //отметка без типа
+    fun d(msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            //val t = if (text != "") " // $text" else ""
+            Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function > $msg")
+        }
+    }
+
+    //отслеживание данных
+    fun data(data: String, msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            Log.d(Constants.TAG_DATA, "$logNameClass >f $function > data:: $data" +
+                    correctText("$logNameClass >f $function",msg)
+            )
+        }
+    }
+
+    //отслеживание больших данных
+    fun bigData(bigData: String, msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            Log.d(Constants.TAG_DATA_BIG, "$logNameClass >f $function > dataBig:: $bigData" +
+                    correctText("$logNameClass >f $function",msg)
+            )
+        }
+    }
+
+    //отслеживание данных в циклах
+    fun eachData(eachData: String, msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            Log.d(Constants.TAG_DATA_EACH, "$logNameClass >f $function > dataEach:: $eachData" +
+                    correctText("$logNameClass >f $function",msg)
+            )
+        }
+    }
+
+    //сообщение об ошибке / Log.e
+    fun error(textError: String, msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            Log.e(Constants.TAG_ERROR, "$logNameClass >f $function > ERROR: $textError" +
+                    correctText("$logNameClass >f $function",msg))
+        }
+    }
+
+    //отметка info / Log.i
+    fun i(msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            //val t = if (text != "") " // $text" else ""
+            Log.i(Constants.TAG_DEBUG, "$logNameClass >f $function > $msg")
+        }
+    }
+
+    //отметка warning / Log.w
+    fun w(msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            //val t = if (text != "") " // $text" else ""
+            Log.w(Constants.TAG_DEBUG, "$logNameClass >f $function > $msg")
+        }
+    }
+
+    //отметка verbose / Log.v
+    fun v(msg: String = ""){
+        // Режим отладки, ведём логи
+        if (BuildConfig.DEBUG) {
+            //val t = if (text != "") " // $text" else ""
+            Log.v(Constants.TAG_DEBUG, "$logNameClass >f $function > $msg")
+        }
+    }
+
+    //перемещаем текст на новую строку и смещаем на длину tabString
+    private fun correctText(tabString: String, text: String): String {
+        return if (text != "") "\n${"".padStart(tabString.count() - 1, ' ')}* " + text else ""
+
+    }
+}
 
 /*
 
@@ -152,28 +279,7 @@ fun checkText(tabString: String, text: String): String {
 log.end()
 log.bigData("$dataBase")*//*
 
-class MyLog(private val lnc: String, private val function: String){
 
-    //var tag = Constants.TAG_DEBUG
-    init {
-        Log.d(Constants.TAG_DEBUG, "$lnc >f $function === START")
-    }
-    fun data(data: String, text: String = ""){
-        val textCorrect = if (text != "") "\n$text" else ""
-        Log.d(Constants.TAG_DATA, "$lnc >f $function $data $textCorrect")
-    }
-    fun bigData(bigData: String, text: String = ""){
-        val textCorrect = if (text != "") "\n$text" else ""
-        Log.d(Constants.TAG_DATA, "$lnc >f $function $bigData $textCorrect")
-    }
-    fun eachData(eachData: String, text: String = ""){
-        val textCorrect = if (text != "") "\n$text" else ""
-        Log.d(Constants.TAG_DATA, "$lnc >f $function $eachData $textCorrect")
-    }
-    fun end(){
-        Log.d(Constants.TAG_DEBUG, "$lnc >f $function ----- END")
-    }
-}
 
 //logUniversal(log)
 fun logUniversal(log: Pair<String, String> = "" to "",
