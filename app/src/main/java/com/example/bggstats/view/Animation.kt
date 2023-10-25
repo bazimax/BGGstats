@@ -21,14 +21,14 @@ import androidx.compose.ui.unit.dp
 @Preview
 @Composable
 fun animatedAngle(startAngle: Float = 0f, endAngle: Float = 310f): Float{
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val angle by infiniteTransition.animateFloat(
         initialValue = startAngle,
         targetValue = endAngle, //310f //sliderValue
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 10000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse//Restart
-        )
+        ), label = ""
     )
     return  angle
 }
@@ -53,7 +53,7 @@ fun LoadingAnimationCircle(
     animationDuration: Int = 360
 ) {
 
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
 
     val rotateAnimation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -63,7 +63,7 @@ fun LoadingAnimationCircle(
                 durationMillis = animationDuration,
                 easing = LinearEasing
             )
-        )
+        ), label = ""
     )
 
     CircularProgressIndicator(

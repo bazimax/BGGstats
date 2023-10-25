@@ -1,6 +1,5 @@
 package com.example.bggstats.view
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,15 +23,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleOwner
-import com.example.bggstats.MainActivity
 import com.example.bggstats.R
 import com.example.bggstats.atest.MyLog
-import com.example.bggstats.atest.log
 import com.example.bggstats.atest.logD
-import com.example.bggstats.atest.logEnd
-import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
-import com.example.bggstats.items.DataItemDetailedGame
 import com.example.bggstats.items.DataItemDetailedGameTemp
 import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.items.ItemsDetailedGameListTemp
@@ -58,19 +52,10 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 const val lnc = "Views" //logNameClass - для логов
 
-
-
-
 //КОНСТАНТЫ
-    //log
-    const val TAG = Constants.TAG //разное
-    const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
-    const val TAG_DATA = Constants.TAG_DATA //переменные и данные
 
     //View
     const val CORNER = Constants.CORNER
-
-
 
 //Delete
 @Composable
@@ -81,8 +66,8 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
         .height(45.dp)
         //.fillMaxHeight()
         //.weight(1f)
-        .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
-        RoundedCornerShape(MainActivity.CORNER.dp),
+        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
+        RoundedCornerShape(CORNER.dp),
         elevation = 10.dp
     ) {
         Column(modifier = Modifier
@@ -116,7 +101,7 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                 Button(onClick = {
                     logD("page3-4 click")
 
-                    RetrofitApiBGG(viewModel = viewModel)
+                    retrofitApiBGG(viewModel = viewModel)
                 }) {
                     Text(text = "page3-4",
                         fontSize = 10.sp)
@@ -172,8 +157,11 @@ inline fun <reified T> createWebService(
 */
 
 
+
 //Game Detailed XML-API (from BGG)
 fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
+    val log = MyLog(lnc, "testRetrofitApiBGG")
+
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -192,6 +180,8 @@ fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
 
     //val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
+        val logCoroutine = MyLog(log, "Coroutine", working = false)
+
         //получаем данные с сайта
         val bggAPIDetailedGame = webService.getFeed("174430,224517")//boardGameGeekAPI.getDetailedGame() //webService.getFeed(id)
         //val bggAPIDetailedGame2 = a.fetchFeed("174430")
@@ -207,14 +197,17 @@ fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
             db.deleteAll()
 
             boardGameList?.forEach { item ->
-                Log.d(TAG, "nameList: ${item.nameList}")
+                logCoroutine.eachData("nameList: ${item.nameList}", childFunction = "boardGameList")
+
                 val listName: MutableList<String> = mutableListOf()//List<String> = emptyList()
                 item.nameList?.forEach { list ->
-                    Log.d(TAG, "list: ${list.name}")
+                    logCoroutine.eachData("list: ${list.name}", childFunction = "nameList > boardGameList")
+
                     listName.add(list.name.toString())
                 }
+
                 val string = listName.joinToString("%%X!!##")
-                Log.d(TAG, "string: $string")
+                logCoroutine.eachData("string: $string", childFunction = "boardGameList")
 
                 val tempItem = EntityDataItem(
                     null,
@@ -227,27 +220,33 @@ fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
                 val a = item.yearpublished
                 val b = item.objectid
                 val c = item.nameList?.size
-                Log.d(TAG, "---- $a, $b, $c")
+
+                logCoroutine.eachData("---- $a, $b, $c", childFunction = "boardGameList")
             }
         }
 
         //val successful = usersResponse.isSuccessful
-        //val aatt = webService.
+        //val a = webService.
         //val parser: XmlPullParser = getResources().getXml(R.xml.contacts)
         //val xpp: XmlPullParser = bggAPIDetailedGame//bggAPIDetailedGame
-        Log.d(TAG, "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n successful: ${bggAPIDetailedGame.boardGameList?.size}, \n webService: $")
+        logCoroutine.data("bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
+                " successful: ${bggAPIDetailedGame.boardGameList?.size}, \n" +
+                " webService: webService")
+        logCoroutine.end()
     }
+
 
     /*val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
         val bggTest = boardGameGeekAPI.getDetailedGame()
         Log.d(TAG, "$bggTest")
     }*/
+    log.end()
 }
 
 //Work
-fun RetrofitApiBGG(viewModel: ViewModel){
-    logStart(lnc, "RetrofitApiBGG")
+fun retrofitApiBGG(viewModel: ViewModel){
+    val log = MyLog(lnc, "RetrofitApiBGG")
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -272,8 +271,9 @@ fun RetrofitApiBGG(viewModel: ViewModel){
         //записываем полученные данные в viewModel а тот уже в таблицу Room
         ViewModelFunctions(viewModel = viewModel).boardGameFeedToViewModel(bggAPIDetailedGame)
 
-        log(lnc, "RetrofitApiBGG", "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
-                " successful: ${bggAPIDetailedGame.boardGameList?.size},")
+        log.data("bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
+                " successful: ${bggAPIDetailedGame.boardGameList?.size},", "< CoroutineScope")
+
     }
 
     /*val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
@@ -281,7 +281,7 @@ fun RetrofitApiBGG(viewModel: ViewModel){
         val bggTest = boardGameGeekAPI.getDetailedGame()
         Log.d(TAG, "$bggTest")
     }*/
-    logEnd(lnc, "RetrofitApiBGG")
+    log.end()
 }
 
 //Info about select game
@@ -389,8 +389,8 @@ fun GraphsTemp(_columnHeightDp: Dp, localDensity: Density){
             columnHeightDp = with(localDensity) { coordinates.size.width.toDp() - 30.dp }
             //Log.d("TAG", "Px: $columnHeightPx, Dp:$columnHeightDp")
         }
-        .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
-        RoundedCornerShape(MainActivity.CORNER.dp)
+        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
+        RoundedCornerShape(CORNER.dp)
     ) {
         Graphs(columnHeightDp)
     }
@@ -443,15 +443,15 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
                     generalGameList: MutableState<List<DataItemGeneralGame>?>,
                     viewModel: ViewModel,
                     owner: LifecycleOwner) {
-    val log = MyLog(lnc, "@Composable: GeneralGameList", "Список доступных игр")
+    MyLog(lnc, "@Composable: GeneralGameList", msgStart = "Список доступных игр")
     Card(
         modifier = Modifier
             .fillMaxWidth()
             //.fillMaxHeight()
             //.weight(1f)
             .height(180.dp)
-            .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
-        RoundedCornerShape(MainActivity.CORNER.dp),
+            .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
+        RoundedCornerShape(CORNER.dp),
         elevation = 10.dp
     ) {
         Column(
@@ -469,7 +469,7 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
                 Text(text = "")
             }
 
-            //прогрессбар
+            //прогресс-бар
             /*Box(modifier = Modifier
                 .height(6.dp)
                 .fillMaxWidth()
@@ -550,6 +550,7 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
     }
 }
 
+//WORK
 //Общий список игр
 @Composable
 fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
@@ -569,7 +570,7 @@ fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
 //Подробный список игр
 @Composable
 fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: ViewModel){
-    MyLog(lnc, "LazyColGeneral")
+    MyLog(lnc, "LazyColDetailed")
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
     ) {
@@ -586,7 +587,7 @@ fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: 
 
 
 /*
-//Zapas пересоздание списка
+//BACKUP пересоздание списка
 fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
     clear()
     addAll(newList)
@@ -602,8 +603,8 @@ fun DetailedGameList(viewModel: ViewModel){
         .fillMaxWidth()
         //.fillMaxHeight()
         //.weight(1f)
-        .shadow(5.dp, shape = RoundedCornerShape(MainActivity.CORNER.dp)),
-        RoundedCornerShape(MainActivity.CORNER.dp),
+        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
+        RoundedCornerShape(CORNER.dp),
         elevation = 10.dp
     ) {
         Column(
@@ -619,12 +620,12 @@ fun DetailedGameList(viewModel: ViewModel){
                 Text(text = "Детальный список игр")
                 Text(text = "99%")
             }
-            //прогрессбар
+            //прогресс-бар
             Box(modifier = Modifier
                 .height(6.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(MainActivity.CORNER.dp))
-                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(MainActivity.CORNER.dp))
+                .clip(RoundedCornerShape(CORNER.dp))
+                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(CORNER.dp))
                 .angledGradientBackground(FonGradient2, 310F)
             )
             Row(modifier = Modifier
@@ -705,7 +706,7 @@ fun CardTemp(name: String, columnHeightDp: Dp) {
             Text(
                 modifier = Modifier
                     .padding(5.dp),
-                text = "$name",
+                text = name,
                 fontSize = 15.sp,
             )
             Box(modifier = Modifier

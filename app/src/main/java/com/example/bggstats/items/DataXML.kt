@@ -61,7 +61,7 @@ data class BoardGameHonor  @JvmOverloads constructor(
     var boardgamehonor: String? = null
 )
 
-//Zapas
+//BACKUP
 
 //Delete? >
 /*@Root(name = "boardgames", strict = false) //rss

@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleOwner
 import com.example.bggstats.atest.MyLog
 import com.example.bggstats.atest.logD
-import com.example.bggstats.atest.logEnd
-import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
 import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.retrofit.ProductAPI
@@ -227,14 +225,16 @@ class MainActivity : ComponentActivity() {
 
     //стартовые функции
     private fun init(dataBase: MainDb){
-        logStart(lnc, "init")
+        val log = MyLog(lnc, "init")
+
         ViewModelFunctions(vm).observeVM(dataBase, this)
-        logEnd(lnc, "init")
+
+        log.end()
     }
 }
 
 /*
-//Zapas - доп. вариант
+//BACKUP - доп. вариант
 val data = data(viewModel = vm, owner = this)
 logMain.d("data.first: ${data.first}")
 logMain.d("data.second: ${data.second}")

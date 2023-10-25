@@ -26,6 +26,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.bggstats.R
 import com.example.bggstats.atest.MyLog
+import com.example.bggstats.atest.logD
 import com.example.bggstats.vm.ViewModel
 
 private const val lnc = "items" //logNameClass - для логов
@@ -34,7 +35,8 @@ private const val lnc = "items" //logNameClass - для логов
 //элемент DataItemGeneralGame для списка всех найденных игр
 @Composable
 fun ItemsGeneralGameList(item: DataItemGeneralGame) {
-    MyLog(lnc, "@Composable: ItemsGeneralGameList", "DataItemGeneralGame: $item")
+    MyLog(lnc, "@Composable: ItemsGeneralGameList", msgStart = "DataItemGeneralGame: $item")
+
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -158,7 +160,7 @@ fun ItemsDetailedGameListTemp(item: DataItemDetailedGameTemp, viewModel: ViewMod
         .padding(3.dp)
         .background(Color.White)
         .clickable {
-            Log.d("TAG", "Click")
+            logD("Row Click")
             viewModel.detailedGame.value = item
             viewModel.statusDetailedGame.value = true
             //Log.d("TAG", "detailedGame: ${viewModel.detailedGame.value}")
