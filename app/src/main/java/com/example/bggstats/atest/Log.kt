@@ -4,21 +4,21 @@ import android.util.Log
 import com.example.bggstats.BuildConfig
 import com.example.bggstats.const.Constants
 
-/*
-Обозначения пометок к комментариям:
-    //!! Важно - важный момент, за которым нужно следить
-    //?? - код вроде важен, необходим комментарий
-    //Delete - временные данные, удалить после окончания разработки
-    //Delete? - проверить, возможно элемент не нужен и его можно удалить
-    //TEST - тестовый элемент
-    //WORK - элемент еще не готов и находится в разработке
-    //Zapas - код, который может быть полезен и оставлен про запас
+/**
+ * Обозначения пометок к комментариям:
+ * //!! Важно - важный момент, за которым нужно следить
+ * //?? - код вроде важен, необходим комментарий
+ * //Delete - временные данные, удалить после окончания разработки
+ * //Delete? - проверить, возможно элемент не нужен и его можно удалить
+ * //TEST - тестовый элемент
+ * //WORK - элемент еще не готов и находится в разработке
+ * //BACKUP - код, который может быть полезен и оставлен про запас
 */
 
 //Delete?
 //private val TAG = this.javaClass.simpleName
 
-//Первый вариант логов
+/*//Первый вариант логов
 //универсальная отметка о чем-то
 fun log(logNameClass: String, function: String, text: String = ""){
 
@@ -115,7 +115,7 @@ fun logError(logNameClass: String, function: String, textError: String){
     if (BuildConfig.DEBUG) {
         Log.e(Constants.TAG_ERROR, "$logNameClass >f $function > ERROR: $textError")
     }
-}
+}*/
 
 //простой лог
 fun logD(text: String){
@@ -136,7 +136,6 @@ fun logI(text: String){
 //перемещаем текст на новую строку и смещаем на длину tabString //оно же correctText
 fun checkText(tabString: String, text: String): String {
     return if (text != "") "\n${"".padStart(tabString.count() - 1, ' ')}* " + text else ""
-
 }
 
 //второй вариант логов //class MyLog(private var logNameClass: String, private var function: String, msgStart: String = "", launch: Boolean = false)
@@ -145,11 +144,22 @@ class MyLog(private var logNameClass: String, private var function: String, msgS
     //private var logNameClass: String = function2
     //private var function: String
     //отметка начала работы функции
+
+    //Конструктор для вложенных логов
+    constructor(myLog: MyLog,
+                childFunction: String,
+                logNameClass: String = myLog.logNameClass,
+                function: String = "${myLog.function} >f $childFunction",
+                msgStart: String = "",
+                launch: Boolean = false
+    ) : this(logNameClass, function, msgStart, launch)
+
     init {
+        //Log.d(Constants.TAG_DEBUG, "Init log")
 
         // Режим отладки, ведём логи
         if (BuildConfig.DEBUG) {
-            //Если это запуск активити
+            //Если это запуск activity
             if (launch) {
                 Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ======================== >" +
                         correctText("$logNameClass >f $function","======") +
@@ -164,14 +174,9 @@ class MyLog(private var logNameClass: String, private var function: String, msgS
         }
     }
 
-    //Конструктор для вложенных логов
-    constructor(myLog: MyLog,
-                childFunction: String,
-                logNameClass: String = myLog.logNameClass,
-                function: String = "${myLog.function} > $childFunction",
-                msgStart: String = "",
-                launch: Boolean = false
-    ) : this(logNameClass, function, msgStart, launch)
+
+
+
 
     //отметка окончания работы функции
     fun end(msg: String = ""){
@@ -264,9 +269,10 @@ class MyLog(private var logNameClass: String, private var function: String, msgS
     }
 }
 
+
 /*
 
-//Zapas идея на будущее
+//BACKUP идея на будущее
 //val log = log(lnc, "function") - start (первый лог всегда пишем так, далее передаем переменную "log" в другие логи и они сами понимают )
 //log(log, "comment") - info
 //log(log, data = "$data") - data
@@ -277,7 +283,8 @@ class MyLog(private var logNameClass: String, private var function: String, msgS
 */
 /*val log = MyLog(lnc, "boardGameFeedViewModelToRoom")
 log.end()
-log.bigData("$dataBase")*//*
+log.bigData("$dataBase")*/
+/*
 
 
 
@@ -338,3 +345,102 @@ fun logUniversal(log: Pair<String, String> = "" to "",
 }
 
 */
+//BACKUP Delete
+/*//Первый вариант логов
+//универсальная отметка о чем-то
+fun log(logNameClass: String, function: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        //val t = if (text != "") " // $text" else ""
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function > $text")
+    }
+}
+
+//старт программы\жизненного цикла (обычно тут указывается onCreate)
+fun logLaunch(logNameClass: String, function: String, text: String = ""){
+    //logD("logLaunch > start")
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        //val f = if (function != "") ">f $function " else ""
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ======================== >" +
+                checkText("$logNameClass >f $function","======") +
+                checkText("$logNameClass >f $function","======") +
+                checkText("$logNameClass >f $function","======") +
+                checkText("$logNameClass >f $function","====== LAUNCH") +
+                checkText("$logNameClass >f $function",text))
+    }
+    //logD("logLaunch > end")
+}
+
+//отметка начала работы функции
+fun logStart(logNameClass: String, function: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function === START" +
+                checkText("$logNameClass >f $function",text))
+    }
+}
+
+//отметка окончания работы функции
+fun logEnd(logNameClass: String, function: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ----- END" +
+                checkText("$logNameClass >f $function",text))
+    }
+}
+
+//подробности выполняемой функции (как универсальный только с переносом строки) + Log.i
+fun logInfo(logNameClass: String, function: String, text: String){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.i(Constants.TAG_DEBUG, "$logNameClass >f $function > Info:" +
+                checkText("$logNameClass >f $function",text))
+    }
+}
+
+//отслеживание данных
+fun logData(logNameClass: String, function: String, data: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.d(Constants.TAG_DATA, "$logNameClass >f $function > data:: $data" +
+                checkText("$logNameClass >f $function",text)
+        )
+    }
+}
+
+//отслеживание больших данных
+fun logDataBig(logNameClass: String, function: String, dataBig: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.d(Constants.TAG_DATA_BIG, "$logNameClass >f $function > dataBig:: $dataBig" +
+                checkText("$logNameClass >f $function",text)
+        )
+    }
+}
+
+//отслеживание данных в циклах
+fun logDataEach(logNameClass: String, function: String, dataEach: String, text: String = ""){
+
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.d(Constants.TAG_DATA_EACH, "$logNameClass >f $function > dataEach:: $dataEach" +
+                checkText("$logNameClass >f $function",text)
+        )
+    }
+}
+
+//сообщение об ошибке + Log.e
+fun logError(logNameClass: String, function: String, textError: String){
+    // Режим отладки, ведём логи
+    if (BuildConfig.DEBUG) {
+        Log.e(Constants.TAG_ERROR, "$logNameClass >f $function > ERROR: $textError")
+    }
+}*/

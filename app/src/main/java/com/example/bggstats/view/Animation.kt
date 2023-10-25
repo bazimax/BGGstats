@@ -15,21 +15,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.bggstats.atest.logD
 
 
 //Animated angle for background
 @Preview
 @Composable
-fun animatedAngle(startAngle: Float = 0f, endAngle: Float = 310f): Float{
-    val infiniteTransition = rememberInfiniteTransition()
+fun animatedAngle(startAngle: Float = 0f, endAngle: Float = 360f): Float{
+
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val angle by infiniteTransition.animateFloat(
         initialValue = startAngle,
         targetValue = endAngle, //310f //sliderValue
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 10000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse//Restart
-        )
+        ), label = ""
     )
+    logD("animatedAngle: $angle")
     return  angle
 }
 
@@ -63,7 +66,7 @@ fun LoadingAnimationCircle(
                 durationMillis = animationDuration,
                 easing = LinearEasing
             )
-        )
+        ), label = ""
     )
 
     CircularProgressIndicator(

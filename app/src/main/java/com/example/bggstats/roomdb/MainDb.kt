@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
+//База данных
+//DataBase - Room
 @Database (entities = [EntityDataItem::class], version = 2) //entity
 abstract class MainDb : RoomDatabase() {
 

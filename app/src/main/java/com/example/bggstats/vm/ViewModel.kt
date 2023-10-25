@@ -8,9 +8,11 @@ import com.example.bggstats.items.DataItemDetailedGame
 import com.example.bggstats.items.DataItemDetailedGameTemp
 import com.example.bggstats.items.DataItemGeneralGame
 import com.example.bggstats.items.Feed
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-open class ViewModel : ViewModel() {
+@HiltViewModel
+open class ViewModel @Inject constructor() : ViewModel() {
 
     //Delete?
     val detailedGame = MutableLiveData<DataItemDetailedGameTemp>()

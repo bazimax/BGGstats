@@ -1,31 +1,28 @@
 package com.example.bggstats.shader
 
-import android.graphics.BlurMaskFilter
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+
 import kotlin.math.*
 
-//- функция поворота градиента выходящего за границы элемента -
 fun Modifier.angledGradientBackground(colorStops: Array<Pair<Float, Color>>, degrees: Float) = this.then(
     drawBehind {
-        //координаты высчитывать по двум внешним треугольникам, которые образуются при пересечении двух прямоугольников:
-        //1ого от элемента (на котором должен быть градиент) и 2ого от повернутого градиента.
-        // *при пересечении образуются 4 треугольника, но так-как противоположные треугольники симметричны мы
-        //  будем использовать только два из них, меняя точки начала и конца градиента каждые 90 градусов
+        /**
+         * Функция поворота градиента выходящего за границы элемента
+         *
+         * Координаты высчитывать по двум внешним треугольникам, которые образуются при пересечении двух
+         * прямоугольников - 1-ого от элемента (на котором должен быть градиент) и 2ого от повернутого градиента.
+         * При пересечении образуются 4 треугольника, но так-как противоположные треугольники симметричны мы
+         * будем использовать только два из них, меняя точки начала и конца градиента каждые 90 градусов
+         */
 
         val (x, y) = size
 
-        val degreesNormalised = (degrees % 360).let { if (it < 0) it + 360 else it }
+        //?? угол больше 360 или у угла отрицательное значение
+        val degreesNormalised = (degrees % 360).let { if (it < 0) it + 360 else it } //не моя строчка
 
         //угол для расчетов
         val angleN = 90 - (degreesNormalised % 90)
@@ -33,13 +30,13 @@ fun Modifier.angledGradientBackground(colorStops: Array<Pair<Float, Color>>, deg
 
         //гипотенуза для 1ого треугольника
         val hypot1 = abs((y * cos(angleNRad)))
-        //зная угол поворота и гипотенузу оприделяем катеты - они же координаты 1й точки
+        //зная угол поворота и гипотенузу определяем катеты - они же координаты 1-й точки
         val x1 = (abs((hypot1 * sin(angleNRad)))).toFloat()
         val y1 = (abs((hypot1 * cos(angleNRad)))).toFloat()
 
         //гипотенуза для 2ого треугольника
         val hypot2 = abs((x * cos(angleNRad)))
-        //зная угол поворота и гипотенузу оприделяем катеты - они же координаты 2й точки
+        //зная угол поворота и гипотенузу определяем катеты - они же координаты 2-й точки
         val x2 = (abs((hypot2 * cos(angleNRad)))).toFloat()
         val y2 = (abs((hypot2 * sin(angleNRad)))).toFloat()
 

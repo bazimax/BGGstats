@@ -27,11 +27,12 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.bggstats.MainActivity
 import com.example.bggstats.R
 import com.example.bggstats.atest.MyLog
-import com.example.bggstats.atest.log
+//import com.example.bggstats.atest.log
 import com.example.bggstats.atest.logD
-import com.example.bggstats.atest.logEnd
-import com.example.bggstats.atest.logStart
+//import com.example.bggstats.atest.logEnd
+//import com.example.bggstats.atest.logStart
 import com.example.bggstats.const.Constants
+
 import com.example.bggstats.items.DataItemDetailedGame
 import com.example.bggstats.items.DataItemDetailedGameTemp
 import com.example.bggstats.items.DataItemGeneralGame
@@ -54,6 +55,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+import kotlin.coroutines.suspendCoroutine
 
 
 const val lnc = "Views" //logNameClass - для логов
@@ -94,8 +96,14 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(onClick = {
-                    logD("BGGList click")
-                    testRetrofitApi()
+                    logD("BGGList click 111")
+                    //testRetrofitApi()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        logD("@@")
+                        logD(func())
+                        //println(func())
+                    }
+
 
                 }) {
                     Text(text = "BGGList",
@@ -156,6 +164,21 @@ fun testRetrofitApi(){
 }
 
 //Delete?
+
+suspend fun func(): String{
+
+    var a = "1"
+    print("1")
+    logD("@@ $a")
+    suspendCoroutine<Unit> { continuation ->
+        a = "${a}2"
+        print("2")
+    }
+    a = "${a}3"
+    print("3")
+    logD("@@ $a")
+    return a
+}
 /*
 inline fun <reified T> createWebService(
     okHttpClient: OkHttpClient,
@@ -247,7 +270,8 @@ fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
 
 //Work
 fun RetrofitApiBGG(viewModel: ViewModel){
-    logStart(lnc, "RetrofitApiBGG")
+    val log = MyLog(lnc, "RetrofitApiBGG")
+    //logStart(lnc, "RetrofitApiBGG")
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -272,8 +296,11 @@ fun RetrofitApiBGG(viewModel: ViewModel){
         //записываем полученные данные в viewModel а тот уже в таблицу Room
         ViewModelFunctions(viewModel = viewModel).boardGameFeedToViewModel(bggAPIDetailedGame)
 
-        log(lnc, "RetrofitApiBGG", "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
-                " successful: ${bggAPIDetailedGame.boardGameList?.size},")
+        log.d("bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \\n\" +\n" +
+                "                \" successful: ${bggAPIDetailedGame.boardGameList?.size},")
+
+        /*log(lnc, "RetrofitApiBGG", "bggAPIDetailedGame: ${bggAPIDetailedGame.boardGameList?.get(0)}, \n" +
+                " successful: ${bggAPIDetailedGame.boardGameList?.size},")*/
     }
 
     /*val boardGameGeekAPI = retrofit.create(BoardGameGeekAPI::class.java)
@@ -281,7 +308,8 @@ fun RetrofitApiBGG(viewModel: ViewModel){
         val bggTest = boardGameGeekAPI.getDetailedGame()
         Log.d(TAG, "$bggTest")
     }*/
-    logEnd(lnc, "RetrofitApiBGG")
+    //logEnd(lnc, "RetrofitApiBGG")
+    log.end()
 }
 
 //Info about select game
@@ -569,7 +597,8 @@ fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
 //Подробный список игр
 @Composable
 fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: ViewModel){
-    MyLog(lnc, "LazyColGeneral")
+    //MyLog(lnc, "LazyColDetailed")
+    Log.d(TAG, "LazyColDetailed")
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
     ) {
@@ -586,7 +615,7 @@ fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: 
 
 
 /*
-//Zapas пересоздание списка
+//BACKUP пересоздание списка
 fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
     clear()
     addAll(newList)
@@ -669,6 +698,8 @@ fun DetailedGameList(viewModel: ViewModel){
             }
             //TEST
             LazyColDetailed(generalGameList = viewModel.detailedGameListTest, viewModel = viewModel)
+
+
             /*LazyColumn(modifier = Modifier
                 .fillMaxWidth()
             ) {
@@ -705,7 +736,7 @@ fun CardTemp(name: String, columnHeightDp: Dp) {
             Text(
                 modifier = Modifier
                     .padding(5.dp),
-                text = "$name",
+                text = name,
                 fontSize = 15.sp,
             )
             Box(modifier = Modifier
