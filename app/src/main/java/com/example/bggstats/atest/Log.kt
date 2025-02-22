@@ -22,9 +22,9 @@ import com.example.bggstats.const.Constants
  *
  *
  * Пример лога и пояснение:
- * logNameClass >f function > childFunction > childFunction > msg
+ * className >f function > childFunction > childFunction > msg
  *
- * logNameClass - имя класса в котором хранится функция
+ * className - имя класса в котором хранится функция
  * function - имя функции
  * childFunction - если есть вложения\ветвления, такие как coroutine, forEach и т.д. - можно дополнить имя функции
  * msg\msgStart - сообщение
@@ -47,44 +47,42 @@ import com.example.bggstats.const.Constants
  * - Лог показывается если BuildConfig.DEBUG и working == true
  * - При первой инициализации помечается "=== START",
  * - Если нужна отметка об окончании, то в конце функции стоит вызвать "end". Пример: val log = MyLog(); log.end()
- * - Есть возможность вложить один MyLog в другой - тогда новый подхватит logNameClass, function и working
+ * - Есть возможность вложить один MyLog в другой - тогда новый подхватит className, function и working
  */
 
 //простой и быстрый лог
-fun logD(text: String, logNameClass: String = "", function: String = ""){
+fun logD(text: String, className: String = "", function: String = ""){
 
 
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
-        val lnc = if (logNameClass == "") "" else "$logNameClass >f "
+        val cN = if (className == "") "" else "$className >f "
         val func = if (function == "") "" else "$function > "
-        Log.d(Constants.TAG_DEBUG, "$lnc$func$text")
+        Log.d(Constants.TAG_DEBUG, "$cN$func$text")
     }
 }
-fun logI(text: String, logNameClass: String = "", function: String = ""){
+fun logI(text: String, className: String = "", function: String = ""){
 
     // Режим отладки, ведём логи
     if (BuildConfig.DEBUG) {
-        val lnc = if (logNameClass == "") "" else "$logNameClass >f "
+        val cN = if (className == "") "" else "$className >f "
         val func = if (function == "") "" else "$function > "
-        Log.i(Constants.TAG_DEBUG, "$lnc$func$text")
+        Log.i(Constants.TAG_DEBUG, "$cN$func$text")
     }
 }
 
 //второй вариант логов
 class MyLog(
-    private var logNameClass: String,
+    private var className: String,
     private var function: String,
     private val working: Boolean = true,
     msgStart: String = "",
     launch: Boolean = false
 ){
 
-    var tag1 = ""
-
     private val checkWorking = BuildConfig.DEBUG && working
 
-    //private var logNameClass: String = function2
+    //private var className: String = function2
     //private var function: String
     //отметка начала работы функции
     init {
@@ -93,16 +91,16 @@ class MyLog(
         if (checkWorking) {
             //Если это запуск activity
             if (launch) {
-                Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function ======================== >" +
-                        correctText("$logNameClass >f $function","======") +
-                        correctText("$logNameClass >f $function","======") +
-                        correctText("$logNameClass >f $function","======") +
-                        correctText("$logNameClass >f $function","====== LAUNCH") +
-                        correctText("$logNameClass >f $function",msgStart))
+                Log.d(Constants.TAG_DEBUG, "$className >f $function ======================== >" +
+                        correctText("$className >f $function","======") +
+                        correctText("$className >f $function","======") +
+                        correctText("$className >f $function","======") +
+                        correctText("$className >f $function","====== LAUNCH") +
+                        correctText("$className >f $function",msgStart))
             }
             //если обычная функция
-            else Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function === START" +
-                    correctText("$logNameClass >f $function",msgStart))
+            else Log.d(Constants.TAG_DEBUG, "$className >f $function === START" +
+                    correctText("$className >f $function",msgStart))
         }
     }
 
@@ -110,11 +108,11 @@ class MyLog(
     constructor(myLog: MyLog,
                 childFunction: String,
                 working: Boolean = myLog.working,
-                logNameClass: String = myLog.logNameClass,
+                className: String = myLog.className,
                 function: String = "${myLog.function} > $childFunction",
                 msgStart: String = "",
                 launch: Boolean = false
-    ) : this(logNameClass, function, working, msgStart, launch)
+    ) : this(className, function, working, msgStart, launch)
 
     //отметка окончания работы функции
     fun end(msg: String = "", childFunction: String = ""){
@@ -122,8 +120,8 @@ class MyLog(
         if (checkWorking) {
             val childF = if (childFunction == "") "" else " > $childFunction"
 
-            Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function$childF ----- END" +
-                    correctText("$logNameClass >f $function$childF",msg))
+            Log.d(Constants.TAG_DEBUG, "$className >f $function$childF ----- END" +
+                    correctText("$className >f $function$childF",msg))
         }
     }
 
@@ -134,7 +132,7 @@ class MyLog(
             val childF = if (childFunction == "") "" else " > $childFunction"
 
             //val t = if (text != "") " // $text" else ""
-            Log.d(Constants.TAG_DEBUG, "$logNameClass >f $function$childF > $msg")
+            Log.d(Constants.TAG_DEBUG, "$className >f $function$childF > $msg")
         }
     }
 
@@ -144,8 +142,8 @@ class MyLog(
         if (checkWorking) {
             val childF = if (childFunction == "") "" else " > $childFunction"
 
-            Log.d(Constants.TAG_DATA, "$logNameClass >f $function$childF > data:: $data" +
-                    correctText("$logNameClass >f $function$childF",msg)
+            Log.d(Constants.TAG_DATA, "$className >f $function$childF > data:: $data" +
+                    correctText("$className >f $function$childF",msg)
             )
         }
     }
@@ -156,8 +154,8 @@ class MyLog(
         if (checkWorking) {
             val childF = if (childFunction == "") "" else " > $childFunction"
 
-            Log.d(Constants.TAG_DATA_BIG, "$logNameClass >f $function$childF > dataBig:: $bigData" +
-                    correctText("$logNameClass >f $function$childF",msg)
+            Log.d(Constants.TAG_DATA_BIG, "$className >f $function$childF > dataBig:: $bigData" +
+                    correctText("$className >f $function$childF",msg)
             )
         }
     }
@@ -168,8 +166,8 @@ class MyLog(
         if (checkWorking) {
             val childF = if (childFunction == "") "" else " > $childFunction"
 
-            Log.d(Constants.TAG_DATA_EACH, "$logNameClass >f $function$childF > dataEach:: $eachData" +
-                    correctText("$logNameClass >f $function$childF",msg)
+            Log.d(Constants.TAG_DATA_EACH, "$className >f $function$childF > dataEach:: $eachData" +
+                    correctText("$className >f $function$childF",msg)
             )
         }
     }
@@ -180,8 +178,8 @@ class MyLog(
         if (checkWorking) {
             val childF = if (childFunction == "") "" else " > $childFunction"
 
-            Log.e(Constants.TAG_ERROR, "$logNameClass >f $function$childF > ERROR: $textError" +
-                    correctText("$logNameClass >f $function$childF",msg))
+            Log.e(Constants.TAG_ERROR, "$className >f $function$childF > ERROR: $textError" +
+                    correctText("$className >f $function$childF",msg))
         }
     }
 
@@ -192,7 +190,7 @@ class MyLog(
             val childF = if (childFunction == "") "" else " > $childFunction"
 
             //val t = if (text != "") " // $text" else ""
-            Log.i(Constants.TAG_DEBUG, "$logNameClass >f $function$childF > $msg")
+            Log.i(Constants.TAG_DEBUG, "$className >f $function$childF > $msg")
         }
     }
 
@@ -203,7 +201,7 @@ class MyLog(
             val childF = if (childFunction == "") "" else " > $childFunction"
 
             //val t = if (text != "") " // $text" else ""
-            Log.w(Constants.TAG_DEBUG, "$logNameClass >f $function$childF > $msg")
+            Log.w(Constants.TAG_DEBUG, "$className >f $function$childF > $msg")
         }
     }
 
@@ -214,7 +212,7 @@ class MyLog(
             val childF = if (childFunction == "") "" else " > $childFunction"
 
             //val t = if (text != "") " // $text" else ""
-            Log.v(Constants.TAG_DEBUG, "$logNameClass >f $function$childF > $msg")
+            Log.v(Constants.TAG_DEBUG, "$className >f $function$childF > $msg")
         }
     }
 

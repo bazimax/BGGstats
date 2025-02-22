@@ -15,9 +15,6 @@ object Constants {
     const val TAG_DATA_BIG = "TAG_BIG_DATA" //объемные данные
     const val TAG_DATA_EACH = "TAG_DATA_EACH" //переменные и данные в циклах
     const val TAG_ERROR = "TAG_ERROR" //ошибка
-
-    //View
-    const val CORNER = 10
 }
 
 

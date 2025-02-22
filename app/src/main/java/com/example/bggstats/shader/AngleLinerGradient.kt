@@ -33,13 +33,13 @@ fun Modifier.angledGradientBackground(colorStops: Array<Pair<Float, Color>>, deg
 
         //гипотенуза для 1ого треугольника
         val hypot1 = abs((y * cos(angleNRad)))
-        //зная угол поворота и гипотенузу оприделяем катеты - они же координаты 1й точки
+        //зная угол поворота и гипотенузу определяем катеты - они же координаты 1й точки
         val x1 = (abs((hypot1 * sin(angleNRad)))).toFloat()
         val y1 = (abs((hypot1 * cos(angleNRad)))).toFloat()
 
         //гипотенуза для 2ого треугольника
         val hypot2 = abs((x * cos(angleNRad)))
-        //зная угол поворота и гипотенузу оприделяем катеты - они же координаты 2й точки
+        //зная угол поворота и гипотенузу определяем катеты - они же координаты 2й точки
         val x2 = (abs((hypot2 * cos(angleNRad)))).toFloat()
         val y2 = (abs((hypot2 * sin(angleNRad)))).toFloat()
 

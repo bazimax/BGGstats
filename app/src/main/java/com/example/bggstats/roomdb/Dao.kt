@@ -13,7 +13,7 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) //Temp - проверить
     fun insertItem(item: EntityDataItem) //(vararg classrooms: Classroom)
     /*//прочитать (без отслеживания изменений)
-    @Query("SELECT * FROM items") //чтоСдел ать-ВЫБРАТЬ(SELECT) что-ВСЁ(*) откуда-ИЗ(FROM) таблицы"items"
+    @Query("SELECT * FROM items") //чтоСделать-ВЫБРАТЬ(SELECT) что-ВСЁ(*) откуда-ИЗ(FROM) таблицы"items"
     fun getAllItems(): List<DataItem>*/
     //прочитать (c отслеживанием изменений)
     @Query("SELECT * FROM items") //чтоСделать-ВЫБРАТЬ(SELECT) что-ВСЁ(*) откуда-ИЗ(FROM) таблицы"items"

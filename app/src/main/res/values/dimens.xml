@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--UI-->
+    <dimen name="corner">10dp</dimen>
+
+    <dimen name="textMain">36sp</dimen>
+    <dimen name="text2">26sp</dimen>
+    <dimen name="textBase">16sp</dimen>
+</resources>

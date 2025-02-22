@@ -49,13 +49,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-
-const val lnc = "Views" //logNameClass - для логов
-
-//КОНСТАНТЫ
-
-    //View
-    const val CORNER = Constants.CORNER
+const val CN = "Views" //className - для логов
 
 //Delete
 @Composable
@@ -66,8 +60,8 @@ fun TestButton(dataBase: MainDb, viewModel: ViewModel){
         .height(45.dp)
         //.fillMaxHeight()
         //.weight(1f)
-        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
-        RoundedCornerShape(CORNER.dp),
+        .shadow(5.dp, shape = RoundedCornerShape(10.dp)),
+        RoundedCornerShape(10.dp), //
         elevation = 10.dp
     ) {
         Column(modifier = Modifier
@@ -160,7 +154,7 @@ inline fun <reified T> createWebService(
 
 //Game Detailed XML-API (from BGG)
 fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
-    val log = MyLog(lnc, "testRetrofitApiBGG")
+    val log = MyLog(CN, "testRetrofitApiBGG")
 
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -246,7 +240,7 @@ fun testRetrofitApiBGG(dataBase: MainDb, viewModel: ViewModel){
 
 //Work
 fun retrofitApiBGG(viewModel: ViewModel){
-    val log = MyLog(lnc, "RetrofitApiBGG")
+    val log = MyLog(CN, "RetrofitApiBGG")
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -389,8 +383,8 @@ fun GraphsTemp(_columnHeightDp: Dp, localDensity: Density){
             columnHeightDp = with(localDensity) { coordinates.size.width.toDp() - 30.dp }
             //Log.d("TAG", "Px: $columnHeightPx, Dp:$columnHeightDp")
         }
-        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
-        RoundedCornerShape(CORNER.dp)
+        .shadow(5.dp, shape = RoundedCornerShape(R.dimen.corner)),
+        RoundedCornerShape(R.dimen.corner)
     ) {
         Graphs(columnHeightDp)
     }
@@ -443,15 +437,15 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
                     generalGameList: MutableState<List<DataItemGeneralGame>?>,
                     viewModel: ViewModel,
                     owner: LifecycleOwner) {
-    MyLog(lnc, "@Composable: GeneralGameList", msgStart = "Список доступных игр")
+    MyLog(CN, "@Composable: GeneralGameList", msgStart = "Список доступных игр")
     Card(
         modifier = Modifier
             .fillMaxWidth()
             //.fillMaxHeight()
             //.weight(1f)
             .height(180.dp)
-            .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
-        RoundedCornerShape(CORNER.dp),
+            .shadow(5.dp, shape = RoundedCornerShape(10.dp)),
+        RoundedCornerShape(10.dp),
         elevation = 10.dp
     ) {
         Column(
@@ -473,8 +467,8 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
             /*Box(modifier = Modifier
                 .height(6.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CORNER.dp))
-                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(CORNER.dp))
+                .clip(RoundedCornerShape(R.dimen.corner))
+                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(R.dimen.corner))
                 .angledGradientBackground(FonGradient, sliderValue)
             )*/
             Row(
@@ -554,7 +548,7 @@ fun GeneralGameList(openDialog: MutableState<Boolean?>,
 //Общий список игр
 @Composable
 fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
-    MyLog(lnc, "LazyColGeneral")
+    MyLog(CN, "LazyColGeneral")
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -570,7 +564,7 @@ fun LazyColGeneral(generalGameList: List<DataItemGeneralGame>){
 //Подробный список игр
 @Composable
 fun LazyColDetailed(generalGameList: List<DataItemDetailedGameTemp>, viewModel: ViewModel){
-    MyLog(lnc, "LazyColDetailed")
+    MyLog(CN, "LazyColDetailed")
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
     ) {
@@ -603,8 +597,8 @@ fun DetailedGameList(viewModel: ViewModel){
         .fillMaxWidth()
         //.fillMaxHeight()
         //.weight(1f)
-        .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
-        RoundedCornerShape(CORNER.dp),
+        .shadow(5.dp, shape = RoundedCornerShape(10.dp)),
+        RoundedCornerShape(10.dp),
         elevation = 10.dp
     ) {
         Column(
@@ -624,8 +618,8 @@ fun DetailedGameList(viewModel: ViewModel){
             Box(modifier = Modifier
                 .height(6.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CORNER.dp))
-                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(CORNER.dp))
+                .clip(RoundedCornerShape(10.dp))
+                .border(width = 1.dp, LightGray, shape = RoundedCornerShape(10.dp))
                 .angledGradientBackground(FonGradient2, 310F)
             )
             Row(modifier = Modifier

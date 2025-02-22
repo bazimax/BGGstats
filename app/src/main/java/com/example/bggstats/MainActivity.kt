@@ -37,33 +37,24 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val lnc = "MainActivity" //logNameClass - для логов
+private const val CN = "MainActivity" //className - для логов //this.javaClass.simpleName
 class MainActivity : ComponentActivity() {
 
-    //private val lnc = "MainActivity" //logNameClass - для логов
+    //private val CN = "MainActivity" //className - для логов
     private val vm: ViewModel by viewModels()
 
     //КОНСТАНТЫ
     companion object {
-        //log
-        const val TAG = Constants.TAG //разное
-        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
-        const val TAG_DATA = Constants.TAG_DATA //переменные и данные
 
-        //View
-        const val CORNER = Constants.CORNER
     }
 
-    //?? Проверить
-    private val TAG1 = this.javaClass.simpleName
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //logLaunch(lnc, "onCreate")
-        val logMain = MyLog(lnc, "onCreate", launch = true)
-        logMain.d(TAG1)
+        //logLaunch(CN, "onCreate")
+        val logMain = MyLog(CN, "onCreate", launch = true)
 
 
 
@@ -127,6 +118,7 @@ class MainActivity : ComponentActivity() {
 
 
 
+
             //??
             //val lazyListState: LazyListState = rememberLazyListState()
 
@@ -179,6 +171,7 @@ class MainActivity : ComponentActivity() {
 
                 //Animation
                 //LoadingAnimationCircle()
+                //androidx.core.R.dimen.notification_subtext_size
 
                 //Graphs
                 Card(modifier = Modifier
@@ -193,8 +186,8 @@ class MainActivity : ComponentActivity() {
                         columnHeightDp = with(localDensity) { coordinates.size.width.toDp() - 30.dp }
                         //logD("Px: $columnHeightPx, Dp:$columnHeightDp")
                     }
-                    .shadow(5.dp, shape = RoundedCornerShape(CORNER.dp)),
-                    RoundedCornerShape(CORNER.dp)
+                    .shadow(5.dp, shape = RoundedCornerShape(10.dp)),
+                    RoundedCornerShape(10.dp)
                 ) {
                     Graphs(columnHeightDp)
                 }
@@ -225,7 +218,7 @@ class MainActivity : ComponentActivity() {
 
     //стартовые функции
     private fun init(dataBase: MainDb){
-        val log = MyLog(lnc, "init")
+        val log = MyLog(CN, "init")
 
         ViewModelFunctions(vm).observeVM(dataBase, this)
 

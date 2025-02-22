@@ -29,13 +29,13 @@ import com.example.bggstats.atest.MyLog
 import com.example.bggstats.atest.logD
 import com.example.bggstats.vm.ViewModel
 
-private const val lnc = "items" //logNameClass - для логов
+private const val CN = "items" //className - для логов
 
 //WORK
 //элемент DataItemGeneralGame для списка всех найденных игр
 @Composable
 fun ItemsGeneralGameList(item: DataItemGeneralGame) {
-    MyLog(lnc, "@Composable: ItemsGeneralGameList", msgStart = "DataItemGeneralGame: $item")
+    MyLog(CN, "@Composable: ItemsGeneralGameList", msgStart = "DataItemGeneralGame: $item")
 
     var isExpanded by remember {
         mutableStateOf(false)

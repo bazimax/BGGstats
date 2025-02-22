@@ -11,10 +11,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-const val lnc = "ViewModelFunctions" //logNameClass - для логов
+const val CN = "ViewModelFunctions" //className - для логов
 class ViewModelFunctions(viewModel: ViewModel) {
 
-    //private val lnc1 = "ViewModelFunctions" //logNameClass - для логов
+    //private val CN1 = "ViewModelFunctions" //className - для логов
     private val vm = viewModel
 
     //следим за изменениями в ViewModel\DataModel
@@ -25,7 +25,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
         //передаем данные в Room/SQLite
         vm.boardGameFeedFromRetrofit.observe(owner) {
-            val logObserve = MyLog(lnc, "observeVM",
+            val logObserve = MyLog(CN, "observeVM",
                 msgStart = "следим за изменениями в DataModel(ViewModel) и передаем их в Room" +
                         "< boardGameFeedFromRetrofit.OBSERVE")
 
@@ -39,7 +39,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
     //переносим полученные подробные данные по играм от BGG из ViewModel в БД-Room
     private fun boardGameFeedViewModelToRoom(dataBase: MainDb){
-        val log = MyLog(lnc, "boardGameFeedViewModelToRoom")
+        val log = MyLog(CN, "boardGameFeedViewModelToRoom")
 
         CoroutineScope(Dispatchers.IO).launch {
             val logCoroutine = MyLog(log, childFunction = "Coroutine", working = false)
@@ -100,7 +100,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
     //записываем полученные подробные данные по играм от BGG во ViewModel
     fun boardGameFeedToViewModel(feed: Feed){
-        val log = MyLog(lnc, "boardGameFeedToViewModel",
+        val log = MyLog(CN, "boardGameFeedToViewModel",
             msgStart = "записываем полученные подробные данные по играм от BGG во ViewModel")
         log.bigData("$feed")
 
@@ -114,7 +114,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
     //WORK (посмотреть что будет с большим количеством элементов)
     //следим за изменениями в БД, читаем данные из БД и записываем в ViewModel
     fun boardGameRoomToViewModel(dataBase: MainDb, owner: LifecycleOwner, viewModel: ViewModel){
-        val log = MyLog(lnc, "boardGameRoomToViewModel",
+        val log = MyLog(CN, "boardGameRoomToViewModel",
             msgStart = "следим за изменениями в БД, читаем данные из БД и записываем в ViewModel")
 
         //для каждого элемента БД (EntityDataItem)
@@ -141,7 +141,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 
     fun boardGameRoomToViewModelCoroutine(dataBase: MainDb, owner: LifecycleOwner, viewModel: ViewModel){
-        val log = MyLog(lnc, "boardGameRoomToViewModelCoroutine",
+        val log = MyLog(CN, "boardGameRoomToViewModelCoroutine",
             msgStart = "следим за изменениями в БД, читаем данные из БД и записываем в ViewModel")
 
         CoroutineScope(Dispatchers.IO).launch {
